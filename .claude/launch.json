@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "adclaw-api",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["--watch", "src/index.js"],
+      "port": 3000
+    },
+    {
+      "name": "adclaw-dashboard",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["src/dashboard/server.js"],
+      "port": 3001
+    }
+  ]
+}

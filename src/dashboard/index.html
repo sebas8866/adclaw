@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AdClaw — Control Center</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=DM+Sans:wght@400;500&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg: #09090B; --bg-s: #141416; --bg-e: #1C1C1F;
+      --border: rgba(255,255,255,0.06); --border-h: rgba(255,255,255,0.1);
+      --text: #FAFAF9; --muted: #6E6E76; --dim: #3E3E45;
+      --primary: #FF6B2C; --green: #10B981; --red: #EF4444; --amber: #F59E0B; --blue: #3B82F6;
+    }
+    body { font-family: 'JetBrains Mono', monospace; background: var(--bg); color: var(--text); -webkit-font-smoothing: antialiased; }
+    .header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 24px; height: 48px;
+      background: rgba(9,9,11,0.8); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      position: sticky; top: 0; z-index: 10;
+    }
+    .header-brand { font-family: 'Bricolage Grotesque', serif; font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 6px; }
+    .header-brand svg { width: 18px; height: 18px; }
+    .header-sub { font-family: 'DM Sans', sans-serif; font-size: 11px; color: var(--muted); }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 12px; padding: 16px 24px; }
+    .card {
+      background: var(--bg-s); border: 1px solid var(--border); border-radius: 12px; padding: 20px;
+      transition: border-color 0.2s;
+    }
+    .card:hover { border-color: var(--border-h); }
+    .card h2 { font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 16px; }
+    .metric { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); }
+    .metric:last-child { border-bottom: none; }
+    .m-label { color: var(--dim); font-size: 12px; }
+    .m-val { font-weight: 600; font-size: 12px; }
+    .m-val.good { color: var(--green); } .m-val.warn { color: var(--amber); } .m-val.danger { color: var(--red); } .m-val.info { color: var(--blue); } .m-val.acc { color: var(--primary); }
+    .bar { height: 3px; background: var(--bg-e); border-radius: 2px; margin-top: 4px; overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: 2px; transition: width 0.6s ease; }
+    .swarm-item { background: var(--bg-e); border: 1px solid var(--border); border-radius: 8px; padding: 14px; margin-bottom: 8px; }
+    .swarm-item .name { font-family: 'Bricolage Grotesque', serif; font-weight: 700; font-size: 13px; color: var(--primary); }
+    .dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; margin-right: 6px; }
+    .dot.running { background: var(--green); } .dot.stopped { background: var(--red); } .dot.initializing { background: var(--amber); }
+    .foot { text-align: center; padding: 12px; font-family: 'DM Sans', sans-serif; font-size: 11px; color: var(--dim); }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="header-brand">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M13 3L4 14h7l-2 7 9-11h-7l2-7z" fill="var(--primary)" stroke="var(--primary)" stroke-width="1.5" stroke-linejoin="round"/></svg>
+      Control Center
+    </div>
+    <div class="header-sub">Mac Mini Fleet Monitor</div>
+  </div>
+  <div class="grid">
+    <div class="card"><h2>System Resources</h2><div id="sys">Loading...</div></div>
+    <div class="card"><h2>Active Swarms</h2><div id="swarms">Loading...</div></div>
+    <div class="card"><h2>Intelligence Tiers</h2>
+      <div class="metric"><span class="m-label">Tier 1 — Ollama (15min)</span><span class="m-val good" id="t1">--</span></div>
+      <div class="metric"><span class="m-label">Tier 2 — Kimi (hourly)</span><span class="m-val info" id="t2">--</span></div>
+      <div class="metric"><span class="m-label">Tier 3 — Opus (daily)</span><span class="m-val warn" id="t3">--</span></div>
+    </div>
+    <div class="card"><h2>Quick Stats</h2>
+      <div class="metric"><span class="m-label">Total Campaigns</span><span class="m-val acc" id="tc">0</span></div>
+      <div class="metric"><span class="m-label">Total Spend Today</span><span class="m-val" id="ts">$0.00</span></div>
+      <div class="metric"><span class="m-label">Avg ROAS</span><span class="m-val acc" id="ar">--</span></div>
+      <div class="metric"><span class="m-label">Compliance Flags</span><span class="m-val" id="cf">0</span></div>
+    </div>
+  </div>
+  <div class="foot">Auto-refreshes every 5s</div>
+  <script>
+    async function f(){try{var r=await Promise.all([fetch('/api/system').then(function(r){return r.json()}),fetch('/api/swarms').then(function(r){return r.json()})]);var s=r[0],w=r[1];
+    var cc=parseFloat(s.cpuUsagePercent),mc=parseFloat(s.memoryUsagePercent);
+    var cC=cc>85?'danger':cc>60?'warn':'good',mC=mc>85?'danger':mc>60?'warn':'info';
+    var bC=function(c){return c==='danger'?'#EF4444':c==='warn'?'#F59E0B':c==='info'?'#3B82F6':'#10B981'};
+    document.getElementById('sys').innerHTML=
+      '<div class="metric"><span class="m-label">CPU</span><span class="m-val '+cC+'">'+s.cpuUsagePercent+'%</span></div>'+
+      '<div class="bar"><div class="bar-fill" style="width:'+s.cpuUsagePercent+'%;background:'+bC(cC)+'"></div></div>'+
+      '<div class="metric"><span class="m-label">Memory</span><span class="m-val '+mC+'">'+s.memoryUsedMb+'MB / '+s.memoryTotalMb+'MB</span></div>'+
+      '<div class="bar"><div class="bar-fill" style="width:'+s.memoryUsagePercent+'%;background:'+bC(mC)+'"></div></div>'+
+      '<div class="metric"><span class="m-label">Node Heap</span><span class="m-val">'+s.processMemoryMb+'MB</span></div>'+
+      '<div class="metric"><span class="m-label">Host</span><span class="m-val" style="font-size:11px">'+s.hostname+'</span></div>';
+    var sl=w.swarms||[];
+    if(!sl.length){document.getElementById('swarms').innerHTML='<div style="color:var(--dim);font-size:12px">No active swarms</div>';}
+    else{document.getElementById('swarms').innerHTML=sl.map(function(s){return '<div class="swarm-item"><div style="margin-bottom:8px"><span class="dot '+s.status+'"></span><span class="name">'+s.clientId+'</span></div><div class="metric"><span class="m-label">Status</span><span class="m-val">'+s.status+'</span></div><div class="metric"><span class="m-label">Campaigns</span><span class="m-val acc">'+s.campaigns+'</span></div><div class="metric"><span class="m-label">Queue</span><span class="m-val">'+s.queue.queued+' / '+s.queue.running+'</span></div></div>'}).join('');}
+    }catch(e){console.error(e)}}
+    f();setInterval(f,5000);
+  </script>
+</body>
+</html>
