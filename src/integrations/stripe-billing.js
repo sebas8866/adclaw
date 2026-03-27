@@ -5,7 +5,9 @@ let stripe;
 
 function getStripe() {
   if (!stripe) {
-    stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+    const key = process.env.STRIPE_SECRET_KEY;
+    if (!key) throw new Error('STRIPE_SECRET_KEY is not configured');
+    stripe = new Stripe(key);
   }
   return stripe;
 }

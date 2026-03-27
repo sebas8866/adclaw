@@ -1,13 +1,16 @@
 import express from 'express';
 import os from 'os';
-import { readFileSync } from 'fs';
+import { readFileSync, existsSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import { config } from '../config/defaults.js';
 import { logger } from '../utils/logger.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const dashboardHtml = readFileSync(join(__dirname, 'index.html'), 'utf-8');
+const htmlPath = join(__dirname, 'index.html');
+const dashboardHtml = existsSync(htmlPath)
+  ? readFileSync(htmlPath, 'utf-8')
+  : '<html><body><h1>Dashboard</h1><p>Not available in serverless mode.</p></body></html>';
 
 /**
  * Resource monitoring dashboard for Mac Mini fleet.

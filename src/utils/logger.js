@@ -8,17 +8,14 @@ const logFormat = printf(({ level, message, timestamp, agent, swarmId, ...meta }
   return `${timestamp} [${level}]${prefix ? ` (${prefix})` : ''} ${message}${metaStr}`;
 });
 
-export const logger = createLogger({
-  level: process.env.LOG_LEVEL || 'info',
-  format: combine(
-    errors({ stack: true }),
-    timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
-    logFormat
-  ),
-  transports: [
-    new transports.Console({
-      format: combine(colorize(), logFormat),
-    }),
+const logTransports = [
+  new transports.Console({
+    format: combine(colorize(), logFormat),
+  }),
+];
+
+if (!process.env.VERCEL) {
+  logTransports.push(
     new transports.File({
       filename: 'logs/adclaw.log',
       maxsize: 10 * 1024 * 1024,
@@ -27,8 +24,18 @@ export const logger = createLogger({
     new transports.File({
       filename: 'logs/errors.log',
       level: 'error',
-    }),
-  ],
+    })
+  );
+}
+
+export const logger = createLogger({
+  level: process.env.LOG_LEVEL || 'info',
+  format: combine(
+    errors({ stack: true }),
+    timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+    logFormat
+  ),
+  transports: logTransports,
 });
 
 export function agentLogger(agentName, swarmId) {
