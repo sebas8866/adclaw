@@ -2,6 +2,7 @@ import express from 'express';
 import os from 'os';
 import { metaAuthRoutes } from '../integrations/meta-oauth.js';
 import { handleWebhook } from '../integrations/stripe-billing.js';
+import { logger } from '../utils/logger.js';
 
 export function createApiRouter(swarmManager) {
   const router = express.Router();
@@ -122,6 +123,32 @@ export function createApiRouter(swarmManager) {
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
+  });
+
+  // ── Data Deletion ───────────────────────────────────────────────
+
+  router.post('/data-deletion', (req, res) => {
+    const { email, reason } = req.body;
+    if (!email) return res.status(400).json({ error: 'Email is required' });
+
+    const confirmationCode = 'DEL-' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).substring(2, 6).toUpperCase();
+    logger.info(`Data deletion request: ${email} — code: ${confirmationCode} — reason: ${reason || 'none'}`);
+
+    res.json({ confirmationCode, message: 'Deletion request received. We will process within 30 days.' });
+  });
+
+  router.post('/data-deletion/facebook', (req, res) => {
+    const signed_request = req.body.signed_request;
+    const confirmationCode = 'FB-DEL-' + Date.now().toString(36).toUpperCase();
+    logger.info(`Facebook data deletion callback received — code: ${confirmationCode}`);
+
+    const proto = req.headers['x-forwarded-proto'] || req.protocol;
+    const host = req.headers['x-forwarded-host'] || req.get('host');
+
+    res.json({
+      url: `${proto}://${host}/data-deletion?code=${confirmationCode}`,
+      confirmation_code: confirmationCode,
+    });
   });
 
   // ── Stripe Webhook ────────────────────────────────────────────────

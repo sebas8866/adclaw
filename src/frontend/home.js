@@ -447,6 +447,17 @@ export function homePage() {
       </div>
     </div>
   </section>
+
+  <footer style="border-top:1px solid var(--border);padding:32px 0;margin-top:0;">
+    <div class="container" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;">
+      <span style="font-size:13px;color:var(--text-dim);">&copy; 2026 AdClaw. All rights reserved.</span>
+      <div style="display:flex;gap:20px;font-size:13px;">
+        <a href="/privacy" style="color:var(--text-dim);text-decoration:none;">Privacy Policy</a>
+        <a href="/terms" style="color:var(--text-dim);text-decoration:none;">Terms of Service</a>
+        <a href="/data-deletion" style="color:var(--text-dim);text-decoration:none;">Data Deletion</a>
+      </div>
+    </div>
+  </footer>
 `,
     scripts: `
   <script>

@@ -4,6 +4,7 @@ import { appDashboardPage } from '../frontend/app-dashboard.js';
 import { launchPage } from '../frontend/launch.js';
 import { swarmsPage, swarmDetailPage } from '../frontend/swarms.js';
 import { loginPage, signupPage } from '../frontend/auth.js';
+import { privacyPage, termsPage, dataDeletionPage } from '../frontend/legal.js';
 import { requireAuth } from '../auth/middleware.js';
 
 export function createFrontendRouter() {
@@ -24,6 +25,18 @@ export function createFrontendRouter() {
 
   router.get('/', (req, res) => {
     res.type('html').send(homePage());
+  });
+
+  router.get('/privacy', (req, res) => {
+    res.type('html').send(privacyPage());
+  });
+
+  router.get('/terms', (req, res) => {
+    res.type('html').send(termsPage());
+  });
+
+  router.get('/data-deletion', (req, res) => {
+    res.type('html').send(dataDeletionPage());
   });
 
   router.use(requireAuth);
