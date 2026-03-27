@@ -20,6 +20,7 @@ export function createFrontendRouter() {
 
   router.get('/auth/logout', (req, res) => {
     res.clearCookie('sb_access_token');
+    res.clearCookie('sb_refresh_token');
     res.redirect('/');
   });
 

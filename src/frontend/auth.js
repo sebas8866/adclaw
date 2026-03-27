@@ -157,7 +157,9 @@ export function loginPage(error) {
       try {
         var result = await sb.auth.signInWithPassword({ email: email, password: pass });
         if (result.error) throw result.error;
-        document.cookie = 'sb_access_token=' + result.data.session.access_token + ';path=/;max-age=3600;SameSite=Lax';
+        var s = result.data.session;
+        document.cookie = 'sb_access_token=' + s.access_token + ';path=/;max-age=' + s.expires_in + ';SameSite=Lax';
+        document.cookie = 'sb_refresh_token=' + s.refresh_token + ';path=/;max-age=2592000;SameSite=Lax';
         window.location.href = '/app';
       } catch(err) {
         btn.disabled = false; btn.textContent = 'Sign in';
@@ -319,7 +321,9 @@ export function signupPage(error) {
         var result = await sb.auth.signUp({ email: email, password: pass });
         if (result.error) throw result.error;
         if (result.data.session) {
-          document.cookie = 'sb_access_token=' + result.data.session.access_token + ';path=/;max-age=3600;SameSite=Lax';
+          var s = result.data.session;
+          document.cookie = 'sb_access_token=' + s.access_token + ';path=/;max-age=' + s.expires_in + ';SameSite=Lax';
+          document.cookie = 'sb_refresh_token=' + s.refresh_token + ';path=/;max-age=2592000;SameSite=Lax';
           window.location.href = '/app';
         } else {
           showToast('Account created! You can now sign in.', 'success');
