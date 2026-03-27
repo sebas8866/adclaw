@@ -1,6 +1,6 @@
 import { pageWrapper, SUPABASE_URL, SUPABASE_ANON_KEY } from './shared.js';
 
-function authShell({ title, subtitle, ctaText, ctaHref, submitId, submitText, formHtml, rightTitle, rightCopy, statsHtml, error, submitHandler }) {
+function authShell({ title, subtitle, ctaText, ctaHref, ctaLinkText, submitId, submitText, formHtml, rightTitle, rightCopy, statsHtml, error, submitHandler }) {
   return `
   <style>
     .auth-shell {
@@ -143,7 +143,7 @@ function authShell({ title, subtitle, ctaText, ctaHref, submitId, submitText, fo
             ${formHtml}
             <button type="submit" id="${submitId}" class="btn btn-primary" style="width:100%;justify-content:center;">${submitText}</button>
           </form>
-          <div class="auth-foot">${ctaText} <a href="${ctaHref}">${ctaHref.includes('signup') ? 'Create one' : 'Sign in'}</a></div>
+          <div class="auth-foot">${ctaText} <a href="${ctaHref}">${ctaLinkText != null ? ctaLinkText : (ctaHref.includes('signup') ? 'Create one' : 'Sign in')}</a></div>
         </div>
       </div>
     </div>
@@ -166,8 +166,9 @@ export function loginPage(error) {
     body: authShell({
       title: 'Welcome back',
       subtitle: 'Sign in to resume your autonomous campaign workflows.',
-      ctaText: "Don't have an account?",
-      ctaHref: '/auth/signup',
+      ctaText: 'Need enterprise access?',
+      ctaHref: 'mailto:support@adclaw.ai?subject=AdClaw%20Enterprise%20inquiry',
+      ctaLinkText: 'Contact us',
       submitId: 'btn-login',
       submitText: 'Sign in',
       submitHandler: 'handleLogin',
@@ -227,7 +228,7 @@ export function signupPage(error) {
     noAuth: true,
     body: authShell({
       title: 'Create account',
-      subtitle: 'Start your first autonomous ad workflow in minutes.',
+      subtitle: 'Enterprise onboarding. After we approve access, you can sign in here.',
       ctaText: 'Already have an account?',
       ctaHref: '/auth/login',
       submitId: 'btn-signup',
@@ -247,9 +248,9 @@ export function signupPage(error) {
       rightTitle: 'Set up once. Let the system execute daily.',
       rightCopy: 'From research and creative generation to account-safe launch and optimization, AdClaw provides a complete operating workflow.',
       statsHtml: `
-        <div class="auth-stat"><div class="v">$0</div><div class="k">To start</div></div>
+        <div class="auth-stat"><div class="v">1</div><div class="k">Enterprise plan</div></div>
         <div class="auth-stat"><div class="v">Meta</div><div class="k">Native OAuth</div></div>
-        <div class="auth-stat"><div class="v">3</div><div class="k">Intelligence tiers</div></div>
+        <div class="auth-stat"><div class="v">6</div><div class="k">Live modules</div></div>
         <div class="auth-stat"><div class="v">1</div><div class="k">Unified dashboard</div></div>
       `,
     }),

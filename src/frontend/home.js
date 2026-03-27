@@ -7,13 +7,21 @@ export function homePage({ isLoggedIn = false } = {}) {
     publicNav: !isLoggedIn,
     body: `
   <style>
+    #mouse-particles {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 5;
+    }
     .hero {
       padding: 128px 0 44px;
       position: relative;
     }
     .hero-wrap {
       display: grid;
-      grid-template-columns: 1.05fr 0.95fr;
+      grid-template-columns: 1fr;
       gap: 26px;
       align-items: stretch;
     }
@@ -70,41 +78,6 @@ export function homePage({ isLoggedIn = false } = {}) {
       letter-spacing: 0.07em;
       font-family: var(--font-mono);
     }
-    .hero-panel {
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-      min-height: 100%;
-    }
-    .hero-row {
-      border: 1px solid rgba(126, 170, 255, 0.22);
-      background: rgba(118, 164, 255, 0.08);
-      border-radius: 14px;
-      padding: 14px;
-    }
-    .hero-row .k {
-      color: var(--text-muted);
-      font-size: 11px;
-      font-family: var(--font-mono);
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-    }
-    .hero-row .v { margin-top: 8px; font-weight: 700; font-size: 16px; }
-    .hero-row .s { margin-top: 4px; color: var(--text-secondary); font-size: 13px; }
-    .hero-code {
-      margin-top: auto;
-      border-radius: 14px;
-      border: 1px solid rgba(129, 171, 255, 0.24);
-      background: rgba(7, 11, 20, 0.86);
-      padding: 14px;
-      font-family: var(--font-mono);
-      font-size: 12px;
-      line-height: 1.8;
-      color: #d5e5ff;
-    }
-    .hero-code .note { color: #87a6dd; }
-
     .logo-strip {
       margin-top: 24px;
       border-top: 1px solid rgba(134, 173, 255, 0.16);
@@ -127,6 +100,87 @@ export function homePage({ isLoggedIn = false } = {}) {
       background: rgba(11, 17, 32, 0.66);
       border-top: 1px solid rgba(130, 171, 255, 0.18);
       border-bottom: 1px solid rgba(130, 171, 255, 0.18);
+    }
+
+    .scroll-build {
+      height: 240vh;
+      position: relative;
+      margin: 8px 0 18px;
+    }
+    .scroll-build-pin {
+      position: sticky;
+      top: 14vh;
+      height: 72vh;
+      display: flex;
+      align-items: center;
+    }
+    .build-card {
+      width: 100%;
+      max-width: 860px;
+      border: 1px solid rgba(132, 173, 255, 0.3);
+      border-radius: 22px;
+      background: linear-gradient(180deg, rgba(16, 26, 48, 0.94), rgba(10, 16, 30, 0.94));
+      padding: 24px 22px;
+    }
+    .build-panel {
+      display: none;
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity 0.22s ease, transform 0.22s ease;
+    }
+    .build-panel.active {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .build-step {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #b7d5ff;
+    }
+    .build-title {
+      margin-top: 10px;
+      font-family: var(--font-display);
+      font-size: clamp(34px, 4.8vw, 62px);
+      line-height: 1.02;
+      letter-spacing: -0.04em;
+      font-weight: 800;
+    }
+    .build-copy {
+      margin-top: 10px;
+      font-size: 15px;
+      color: var(--text-secondary);
+      max-width: 620px;
+      line-height: 1.65;
+    }
+    .build-progress {
+      margin-top: 16px;
+      width: 100%;
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(120, 155, 219, 0.26);
+      overflow: hidden;
+      border: 1px solid rgba(134, 171, 255, 0.2);
+    }
+    .build-progress-fill {
+      width: 0%;
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #9fd0ff, #6daeff);
+      transition: width 0.12s linear;
+    }
+    .build-markers {
+      margin-top: 8px;
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-dim);
     }
     .process {
       margin-top: 42px;
@@ -155,9 +209,9 @@ export function homePage({ isLoggedIn = false } = {}) {
 
     .pricing-grid {
       margin-top: 42px;
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
+      max-width: 640px;
+      margin-left: auto;
+      margin-right: auto;
     }
     .price-card { display: flex; flex-direction: column; min-height: 100%; }
     .price-card.featured {
@@ -213,9 +267,13 @@ export function homePage({ isLoggedIn = false } = {}) {
     @media (max-width: 980px) {
       .hero-wrap { grid-template-columns: 1fr; }
       .hero-metrics { grid-template-columns: 1fr; }
-      .process, .pricing-grid { grid-template-columns: 1fr; }
+      .scroll-build { height: 220vh; }
+      .scroll-build-pin { top: 10vh; height: 76vh; }
+      .process { grid-template-columns: 1fr; }
     }
   </style>
+
+  <canvas id="mouse-particles"></canvas>
 
   <section class="hero">
     <div class="container">
@@ -225,7 +283,7 @@ export function homePage({ isLoggedIn = false } = {}) {
           <h1 class="text-hero hero-title">Launch, optimize, and scale ads with a <span class="accent">live AI operating layer</span>.</h1>
           <p class="text-body" style="margin-top:20px;">AdClaw combines planning, creative, policy checks, and budget optimization into one continuous workflow. Connect your ad account once and let the swarm execute.</p>
           <div class="hero-cta">
-            <a href="/auth/signup" class="btn btn-primary btn-lg">Start free</a>
+            <a href="mailto:support@adclaw.ai?subject=AdClaw%20Enterprise%20inquiry" class="btn btn-primary btn-lg">Contact us</a>
             <a href="#how" class="btn btn-secondary btn-lg">See workflow</a>
           </div>
           <div class="hero-proof">
@@ -249,29 +307,39 @@ export function homePage({ isLoggedIn = false } = {}) {
           </div>
         </div>
 
-        <div class="card hero-panel reveal reveal-d2">
-          <div class="hero-row">
-            <div class="k">Now monitoring</div>
-            <div class="v">Meta account + campaign performance</div>
-            <div class="s">Realtime read + optimization loop every 15 minutes</div>
-          </div>
-          <div class="hero-row">
-            <div class="k">Execution model</div>
-            <div class="v">Research → Creative → Compliance → Launch</div>
-            <div class="s">With automatic budget updates based on ROAS signals</div>
-          </div>
-          <div class="hero-code">
-            <div class="note">// swarm optimization cycle</div>
-            <div>if (roas &lt; 2.5) pause(adSet)</div>
-            <div>if (roas &gt;= 4.0) increaseBudget(30)</div>
-            <div class="note">// daily strategy review</div>
-            <div>opus.review(account, spend, creativeFatigue)</div>
-          </div>
-        </div>
       </div>
 
       <div class="logo-strip reveal reveal-d3">
         <span>Framer-style hierarchy</span><span>Relume-style blocks</span><span>Vercel-grade minimal polish</span><span>Meta ads workflow</span><span>Autonomous execution</span>
+      </div>
+    </div>
+  </section>
+
+  <section id="scroll-build" class="scroll-build">
+    <div class="container scroll-build-pin">
+      <div class="build-card reveal">
+        <div class="build-panel active" data-build-panel="0">
+          <div class="build-step">Build 01</div>
+          <h3 class="build-title">Connect your account.</h3>
+          <p class="build-copy">Secure OAuth connection to Facebook and select the ad account you want us to run.</p>
+        </div>
+        <div class="build-panel" data-build-panel="1">
+          <div class="build-step">Build 02</div>
+          <h3 class="build-title">Generate strategy + creative.</h3>
+          <p class="build-copy">The system drafts campaign direction, hooks, and creative variants based on your setup.</p>
+        </div>
+        <div class="build-panel" data-build-panel="2">
+          <div class="build-step">Build 03</div>
+          <h3 class="build-title">Launch and optimize live.</h3>
+          <p class="build-copy">Campaigns are monitored and optimized continuously as performance data updates.</p>
+        </div>
+        <div class="build-panel" data-build-panel="3">
+          <div class="build-step">Build 04</div>
+          <h3 class="build-title">Scale winners automatically.</h3>
+          <p class="build-copy">Top performers get more budget while weak ad sets are reduced or paused.</p>
+        </div>
+        <div class="build-progress"><div id="build-progress-fill" class="build-progress-fill"></div></div>
+        <div class="build-markers"><span>Connect</span><span>Create</span><span>Optimize</span><span>Scale</span></div>
       </div>
     </div>
   </section>
@@ -342,43 +410,20 @@ export function homePage({ isLoggedIn = false } = {}) {
   <section class="section band" id="pricing">
     <div class="container">
       <p class="label-tag reveal">Pricing</p>
-      <h2 class="text-section reveal reveal-d1" style="margin-top:14px;max-width:620px;">Start free, then move to operating plans when you scale.</h2>
+      <h2 class="text-section reveal reveal-d1" style="margin-top:14px;max-width:620px;">Enterprise only — we onboard teams directly.</h2>
+      <p class="text-body reveal reveal-d1" style="margin-top:12px;max-width:560px;">AdClaw is sold as a single enterprise subscription. There is no self-serve free tier or public price list. Tell us about your ad accounts and workflow; we’ll scope deployment and support.</p>
       <div class="pricing-grid">
-        <article class="card price-card reveal reveal-d2">
-          <div class="price-tier">Starter</div>
-          <div class="price-amount">$0</div>
-          <p class="text-small" style="margin-top:6px;">Beta access</p>
+        <article class="card price-card featured reveal reveal-d2">
+          <div class="price-tier">Enterprise</div>
+          <div class="price-amount">Custom <span>pricing</span></div>
+          <p class="text-small" style="margin-top:6px;">Everything you need to run autonomous Meta ads at scale</p>
           <ul class="price-points">
-            <li>One connected ad account</li>
-            <li>Full launch wizard</li>
-            <li>Core reporting</li>
-            <li>Email support</li>
+            <li>Dedicated onboarding and account configuration</li>
+            <li>Multi–ad-account coverage and governance</li>
+            <li>Optimization, reporting, and priority support</li>
+            <li>Optional integrations and rollout aligned to your team</li>
           </ul>
-          <a href="/auth/signup" class="btn btn-secondary">Get started</a>
-        </article>
-        <article class="card price-card featured reveal reveal-d3">
-          <div class="price-tier">Growth</div>
-          <div class="price-amount">$97 <span>/ month</span></div>
-          <p class="text-small" style="margin-top:6px;">Most popular</p>
-          <ul class="price-points">
-            <li>Up to 5 accounts</li>
-            <li>Advanced optimization cadence</li>
-            <li>Priority support + faster iterations</li>
-            <li>Strategy summaries</li>
-          </ul>
-          <a href="/auth/signup" class="btn btn-primary">Start free trial</a>
-        </article>
-        <article class="card price-card reveal reveal-d4">
-          <div class="price-tier">Agency</div>
-          <div class="price-amount">$497 <span>/ month</span></div>
-          <p class="text-small" style="margin-top:6px;">For multi-brand teams</p>
-          <ul class="price-points">
-            <li>High account limits</li>
-            <li>API integrations</li>
-            <li>White-label reporting</li>
-            <li>Dedicated onboarding</li>
-          </ul>
-          <a href="/auth/signup" class="btn btn-secondary">Contact sales</a>
+          <a href="mailto:support@adclaw.ai?subject=AdClaw%20Enterprise%20inquiry" class="btn btn-primary">Contact us</a>
         </article>
       </div>
     </div>
@@ -388,9 +433,9 @@ export function homePage({ isLoggedIn = false } = {}) {
     <div class="container">
       <div class="card cta-block reveal">
         <h2 class="text-section">Replace manual media buying with a system that runs itself.</h2>
-        <p class="text-body" style="margin-top:16px;">Create your account, connect Facebook, choose your ad account, and launch your first swarm in minutes.</p>
+        <p class="text-body" style="margin-top:16px;">Enterprise customers get hands-on onboarding: connect Facebook, scope accounts, and launch with our team. Reach out to get started.</p>
         <div style="margin-top:28px;">
-          <a href="/auth/signup" class="btn btn-primary btn-lg">Create account</a>
+          <a href="mailto:support@adclaw.ai?subject=AdClaw%20Enterprise%20inquiry" class="btn btn-primary btn-lg">Contact us</a>
         </div>
       </div>
     </div>
@@ -421,6 +466,80 @@ export function homePage({ isLoggedIn = false } = {}) {
         var hrs = Math.floor(mins / 60);
         document.getElementById('hero-uptime').textContent = hrs > 0 ? hrs + 'h' : mins + 'm';
       } catch(e) {}
+    })();
+
+    (function initMouseParticles() {
+      var canvas = document.getElementById('mouse-particles');
+      if (!canvas) return;
+      var ctx = canvas.getContext('2d');
+      var particles = [];
+
+      function resize() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      }
+      resize();
+      window.addEventListener('resize', resize);
+
+      window.addEventListener('mousemove', function(e) {
+        for (var i = 0; i < 2; i++) {
+          particles.push({
+            x: e.clientX + (Math.random() - 0.5) * 6,
+            y: e.clientY + (Math.random() - 0.5) * 6,
+            vx: (Math.random() - 0.5) * 0.7,
+            vy: (Math.random() - 0.5) * 0.7,
+            life: 1,
+            r: Math.random() * 1.5 + 0.6
+          });
+        }
+        if (particles.length > 110) particles.splice(0, particles.length - 110);
+      });
+
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        for (var i = particles.length - 1; i >= 0; i--) {
+          var p = particles[i];
+          p.x += p.vx;
+          p.y += p.vy;
+          p.life -= 0.02;
+          if (p.life <= 0) {
+            particles.splice(i, 1);
+            continue;
+          }
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(148, 197, 255,' + (p.life * 0.42).toFixed(3) + ')';
+          ctx.fill();
+        }
+        requestAnimationFrame(draw);
+      }
+      draw();
+    })();
+
+    (function initScrollBuild() {
+      var section = document.getElementById('scroll-build');
+      var panels = Array.prototype.slice.call(document.querySelectorAll('.build-panel'));
+      var fill = document.getElementById('build-progress-fill');
+      if (!section || !panels.length) return;
+
+      function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
+
+      function update() {
+        var rect = section.getBoundingClientRect();
+        var total = Math.max(1, section.offsetHeight - window.innerHeight);
+        var progress = clamp((-rect.top) / total, 0, 1);
+        var idx = Math.min(panels.length - 1, Math.floor(progress * panels.length));
+
+        panels.forEach(function(panel, i) {
+          if (i === idx) panel.classList.add('active');
+          else panel.classList.remove('active');
+        });
+        if (fill) fill.style.width = (progress * 100).toFixed(2) + '%';
+      }
+
+      window.addEventListener('scroll', update, { passive: true });
+      window.addEventListener('resize', update);
+      update();
     })();
   </script>
 `

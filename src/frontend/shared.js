@@ -423,7 +423,7 @@ export function pageWrapper({ title, body, activeNav = '', scripts = '', noAuth 
     <div class="nav-user">
       ${publicNav ? `
       <a href="/auth/login">Log in</a>
-      <a href="/auth/signup" class="btn btn-primary btn-sm">Sign up</a>
+      <a href="mailto:support@adclaw.ai?subject=AdClaw%20Enterprise%20inquiry" class="btn btn-primary btn-sm">Contact us</a>
       ` : `
       <a href="/auth/logout">Sign out</a>
       `}
