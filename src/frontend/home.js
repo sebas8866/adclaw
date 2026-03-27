@@ -21,7 +21,7 @@ export function homePage({ isLoggedIn = false } = {}) {
     }
     .hero-wrap {
       display: grid;
-      grid-template-columns: 1fr;
+      grid-template-columns: 1.1fr 0.9fr;
       gap: 26px;
       align-items: stretch;
     }
@@ -77,6 +77,23 @@ export function homePage({ isLoggedIn = false } = {}) {
       text-transform: uppercase;
       letter-spacing: 0.07em;
       font-family: var(--font-mono);
+    }
+    .hero-video {
+      border: 1px solid rgba(128, 170, 255, 0.24);
+      border-radius: 20px;
+      overflow: hidden;
+      background: rgba(7, 11, 22, 0.92);
+      min-height: 460px;
+      display: flex;
+      align-items: stretch;
+      box-shadow: 0 20px 50px rgba(6, 10, 20, 0.4);
+    }
+    .hero-video video {
+      width: 100%;
+      height: 100%;
+      min-height: 460px;
+      object-fit: cover;
+      display: block;
     }
     .logo-strip {
       margin-top: 24px;
@@ -253,6 +270,11 @@ export function homePage({ isLoggedIn = false } = {}) {
               <div class="lab">System uptime</div>
             </div>
           </div>
+        </div>
+        <div class="hero-video reveal reveal-d2">
+          <video autoplay muted loop playsinline preload="metadata">
+            <source src="/media/AdClawHomepage.mp4" type="video/mp4">
+          </video>
         </div>
 
       </div>
