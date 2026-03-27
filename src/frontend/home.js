@@ -8,8 +8,8 @@ export function homePage({ isLoggedIn = false } = {}) {
     body: `
   <style>
     .home-hero {
-      padding-top: 120px;
-      padding-bottom: 0;
+      padding-top: 148px;
+      padding-bottom: 24px;
     }
     .home-hero-inner { max-width: 720px; }
     .home-hero-accent { color: var(--primary); }
@@ -50,13 +50,17 @@ export function homePage({ isLoggedIn = false } = {}) {
       .home-stat:last-child { border-bottom: none; }
     }
 
-    .home-section--surface { background: var(--bg-surface); }
+    .home-section--surface {
+      background: #05070d;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
 
     .home-steps {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 16px;
-      margin-top: 48px;
+      margin-top: 56px;
     }
     @media (max-width: 900px) { .home-steps { grid-template-columns: 1fr; } }
 
@@ -129,7 +133,7 @@ export function homePage({ isLoggedIn = false } = {}) {
     }
     .home-intel-local::before { background: var(--green); }
     .home-intel-kimi::before { background: var(--blue); }
-    .home-intel-opus::before { background: var(--amber); }
+    .home-intel-opus::before { background: var(--primary); }
 
     .home-intel-freq {
       font-family: var(--font-mono);
@@ -141,7 +145,7 @@ export function homePage({ isLoggedIn = false } = {}) {
     }
     .home-intel-local .home-intel-freq { color: var(--green); }
     .home-intel-kimi .home-intel-freq { color: var(--blue); }
-    .home-intel-opus .home-intel-freq { color: var(--amber); }
+    .home-intel-opus .home-intel-freq { color: var(--primary); }
 
     .home-intel-model {
       font-family: var(--font-mono);
@@ -163,9 +167,8 @@ export function homePage({ isLoggedIn = false } = {}) {
 
     .home-price-card { display: flex; flex-direction: column; height: 100%; }
     .home-price-card--featured {
-      border-color: var(--border-hover);
-      box-shadow: 0 1px 0 var(--primary) inset;
-      background: var(--bg-elevated);
+      border-color: rgba(82, 150, 255, 0.3);
+      background: #0c1019;
     }
     .home-price-tier {
       font-family: var(--font-mono);
@@ -308,7 +311,7 @@ export function homePage({ isLoggedIn = false } = {}) {
             <div><span style="color:var(--primary);">if</span> (roas &lt; 2.5) <span style="color:var(--red);">pause</span>(adSet)</div>
             <div><span style="color:var(--primary);">if</span> (roas &gt; 4.0) <span style="color:var(--text);">scale</span>(budget, +30%)</div>
             <div style="color:var(--text-muted); margin-top:12px;">// daily</div>
-            <div><span style="color:var(--amber);">opus</span>.review(strategy)</div>
+            <div><span style="color:var(--primary);">opus</span>.review(strategy)</div>
           </div>
         </div>
       </div>

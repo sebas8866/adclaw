@@ -16,7 +16,7 @@ export function loginPage(error) {
     .auth-right {
       flex: 1; position: relative; overflow: hidden;
       display: flex; align-items: center; justify-content: center;
-      background: var(--bg-surface);
+      background: #05070d;
       border-left: 1px solid var(--border);
     }
     @media (max-width: 900px) { .auth-right { display: none; } }
@@ -27,15 +27,10 @@ export function loginPage(error) {
     }
     .auth-right::before {
       content: '';
-      position: absolute; top: 20%; right: -20%;
-      width: 500px; height: 500px;
-      background: radial-gradient(circle, rgba(255,107,44,0.06), transparent 70%);
-    }
-    .auth-right::after {
-      content: '';
-      position: absolute; bottom: 10%; left: -10%;
-      width: 300px; height: 300px;
-      background: radial-gradient(circle, rgba(59,130,246,0.04), transparent 70%);
+      position: absolute;
+      inset: 0;
+      border-left: 1px solid rgba(82, 150, 255, 0.12);
+      pointer-events: none;
     }
 
     .auth-box { max-width: 380px; width: 100%; }
@@ -85,9 +80,10 @@ export function loginPage(error) {
     }
     .auth-feature-icon {
       width: 36px; height: 36px; border-radius: var(--r-sm);
-      background: var(--primary-soft);
+      background: rgba(82, 150, 255, 0.12);
+      border: 1px solid rgba(82, 150, 255, 0.24);
       display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0; font-size: 16px;
+      flex-shrink: 0;
     }
     .auth-feature h4 { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
     .auth-feature p { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
@@ -124,14 +120,18 @@ export function loginPage(error) {
         <p class="auth-quote">Six AI agents running your ad campaigns 24/7. No human intervention needed.</p>
         <p class="auth-quote-attr">Autonomous advertising, finally.</p>
         <div class="auth-feature">
-          <div class="auth-feature-icon">&#9889;</div>
+          <div class="auth-feature-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+          </div>
           <div>
             <h4>Launches in under 5 minutes</h4>
             <p>Connect your ad accounts, paste your business page, and your swarm takes over immediately.</p>
           </div>
         </div>
         <div class="auth-feature">
-          <div class="auth-feature-icon">&#9881;</div>
+          <div class="auth-feature-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 8.5A3.5 3.5 0 1 0 12 15.5A3.5 3.5 0 1 0 12 8.5Z" stroke="currentColor" stroke-width="1.7"/><path d="M19.4 15a7.9 7.9 0 0 0 .1-2l2-1.5-2-3.4-2.4.6a8.2 8.2 0 0 0-1.7-1l-.4-2.5h-4l-.4 2.5a8.2 8.2 0 0 0-1.7 1L6.5 8l-2 3.5 2 1.5a7.9 7.9 0 0 0 .1 2l-2 1.5 2 3.4 2.4-.6c.5.4 1.1.7 1.7 1l.4 2.5h4l.4-2.5c.6-.3 1.2-.6 1.7-1l2.4.6 2-3.4-2-1.5z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
+          </div>
           <div>
             <h4>Optimizes every 15 minutes</h4>
             <p>Three AI tiers work together — local Ollama, Kimi research, and Claude Opus for strategic decisions.</p>
@@ -187,7 +187,7 @@ export function signupPage(error) {
     .auth-right {
       flex: 1; position: relative; overflow: hidden;
       display: flex; align-items: center; justify-content: center;
-      background: var(--bg-surface);
+      background: #05070d;
       border-left: 1px solid var(--border);
     }
     @media (max-width: 900px) { .auth-right { display: none; } }
@@ -198,9 +198,10 @@ export function signupPage(error) {
     }
     .auth-right::before {
       content: '';
-      position: absolute; top: 20%; right: -20%;
-      width: 500px; height: 500px;
-      background: radial-gradient(circle, rgba(255,107,44,0.06), transparent 70%);
+      position: absolute;
+      inset: 0;
+      border-left: 1px solid rgba(82, 150, 255, 0.12);
+      pointer-events: none;
     }
 
     .auth-box { max-width: 380px; width: 100%; }

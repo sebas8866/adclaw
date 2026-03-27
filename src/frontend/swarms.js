@@ -6,7 +6,7 @@ export function swarmsPage() {
     activeNav: 'swarms',
     body: `
   <style>
-    .swarms-page { padding: 48px 0 80px; }
+    .swarms-page { padding: 76px 0 112px; border-top: 1px solid var(--border); }
     .swarms-head {
       display: flex; justify-content: space-between; align-items: flex-start;
       flex-wrap: wrap; gap: 16px; margin-bottom: 8px;
@@ -44,7 +44,7 @@ export function swarmsPage() {
     .swarm-card-actions { display: flex; flex-wrap: wrap; gap: 8px; }
     .agent-pills {
       display: flex; flex-wrap: wrap; gap: 8px;
-      margin-top: 20px;
+      margin-top: 24px;
       padding-top: 16px;
       border-top: 1px solid var(--border);
     }

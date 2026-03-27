@@ -8,16 +8,8 @@ export function appDashboardPage() {
   <style>
     .dash-page {
       position: relative;
-      padding: 48px 0 80px;
-    }
-    .dash-page::before {
-      content: '';
-      position: absolute;
-      inset: 0 0 auto 0;
-      height: 320px;
-      background: radial-gradient(ellipse 70% 55% at 20% 0%, rgba(255, 107, 44, 0.06), transparent 55%),
-                  radial-gradient(ellipse 50% 40% at 85% 10%, rgba(59, 130, 246, 0.04), transparent 50%);
-      pointer-events: none;
+      padding: 72px 0 112px;
+      border-top: 1px solid var(--border);
     }
     .dash-inner { position: relative; z-index: 1; }
     .dash-stat-label {
@@ -57,7 +49,7 @@ export function appDashboardPage() {
 
   <section class="dash-page">
     <div class="container dash-inner">
-      <div class="flex justify-between items-center" style="flex-wrap:wrap;gap:20px;margin-bottom:40px;">
+      <div class="flex justify-between items-center" style="flex-wrap:wrap;gap:20px;margin-bottom:52px;">
         <div>
           <h1 class="text-section" style="margin-bottom:10px;">Dashboard</h1>
           <p class="text-body" style="font-size:14px;max-width:420px;">Live view of swarms, capacity, and platform health.</p>
@@ -111,7 +103,7 @@ export function appDashboardPage() {
             <span class="metric-value" id="t1">every 15 min</span>
           </div>
           <div class="metric-row">
-            <span class="metric-label"><span class="dot" style="background:var(--blue);box-shadow:0 0 8px rgba(59,130,246,0.45);"></span> Tier 2 — Kimi</span>
+            <span class="metric-label"><span class="dot" style="background:var(--blue);"></span> Tier 2 — Kimi</span>
             <span class="metric-value" id="t2">hourly</span>
           </div>
           <div class="metric-row">

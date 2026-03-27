@@ -7,11 +7,12 @@ export function launchPage() {
     body: `
   <style>
     .launch-wrap {
-      padding: 56px 0 96px;
+      padding: 84px 0 116px;
+      border-top: 1px solid var(--border);
     }
     .launch-hero {
       max-width: 720px;
-      margin: 0 auto 40px;
+      margin: 0 auto 52px;
     }
     .launch-hero h1 {
       font-family: var(--font-display);
@@ -84,7 +85,7 @@ export function launchPage() {
       justify-content: center;
       gap: 10px;
       padding: 18px 20px;
-      background: var(--bg);
+      background: #050505;
       border: 1px solid var(--border);
       border-radius: var(--r-md);
       font-family: var(--font-body);
@@ -200,7 +201,7 @@ export function launchPage() {
     }
 
     .review-panel {
-      background: var(--bg);
+      background: #050505;
       border: 1px solid var(--border);
       border-radius: var(--r-lg);
       padding: 20px 22px;
