@@ -102,36 +102,18 @@ export function homePage({ isLoggedIn = false } = {}) {
       border-bottom: 1px solid rgba(130, 171, 255, 0.18);
     }
 
-    .scroll-build {
-      height: 240vh;
-      position: relative;
-      margin: 8px 0 18px;
-    }
-    .scroll-build-pin {
-      position: sticky;
-      top: 14vh;
-      height: 72vh;
+    .build-flow-stack {
+      margin-top: 40px;
       display: flex;
-      align-items: center;
-    }
-    .build-card {
-      width: 100%;
+      flex-direction: column;
+      gap: 16px;
       max-width: 860px;
+    }
+    .build-flow-item {
       border: 1px solid rgba(132, 173, 255, 0.3);
       border-radius: 22px;
       background: linear-gradient(180deg, rgba(16, 26, 48, 0.94), rgba(10, 16, 30, 0.94));
       padding: 24px 22px;
-    }
-    .build-panel {
-      display: none;
-      opacity: 0;
-      transform: translateY(12px);
-      transition: opacity 0.22s ease, transform 0.22s ease;
-    }
-    .build-panel.active {
-      display: block;
-      opacity: 1;
-      transform: translateY(0);
     }
     .build-step {
       font-family: var(--font-mono);
@@ -143,8 +125,8 @@ export function homePage({ isLoggedIn = false } = {}) {
     .build-title {
       margin-top: 10px;
       font-family: var(--font-display);
-      font-size: clamp(34px, 4.8vw, 62px);
-      line-height: 1.02;
+      font-size: clamp(26px, 3.4vw, 48px);
+      line-height: 1.06;
       letter-spacing: -0.04em;
       font-weight: 800;
     }
@@ -154,33 +136,6 @@ export function homePage({ isLoggedIn = false } = {}) {
       color: var(--text-secondary);
       max-width: 620px;
       line-height: 1.65;
-    }
-    .build-progress {
-      margin-top: 16px;
-      width: 100%;
-      height: 6px;
-      border-radius: 999px;
-      background: rgba(120, 155, 219, 0.26);
-      overflow: hidden;
-      border: 1px solid rgba(134, 171, 255, 0.2);
-    }
-    .build-progress-fill {
-      width: 0%;
-      height: 100%;
-      border-radius: 999px;
-      background: linear-gradient(90deg, #9fd0ff, #6daeff);
-      transition: width 0.12s linear;
-    }
-    .build-markers {
-      margin-top: 8px;
-      display: flex;
-      justify-content: space-between;
-      gap: 8px;
-      font-family: var(--font-mono);
-      font-size: 10px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--text-dim);
     }
     .process {
       margin-top: 42px;
@@ -267,8 +222,6 @@ export function homePage({ isLoggedIn = false } = {}) {
     @media (max-width: 980px) {
       .hero-wrap { grid-template-columns: 1fr; }
       .hero-metrics { grid-template-columns: 1fr; }
-      .scroll-build { height: 220vh; }
-      .scroll-build-pin { top: 10vh; height: 76vh; }
       .process { grid-template-columns: 1fr; }
     }
   </style>
@@ -315,31 +268,31 @@ export function homePage({ isLoggedIn = false } = {}) {
     </div>
   </section>
 
-  <section id="scroll-build" class="scroll-build">
-    <div class="container scroll-build-pin">
-      <div class="build-card reveal">
-        <div class="build-panel active" data-build-panel="0">
+  <section class="section band" id="build-flow">
+    <div class="container">
+      <p class="label-tag reveal">From connect to scale</p>
+      <h2 class="text-section reveal reveal-d1" style="margin-top:14px;max-width:700px;">Four moves. One operating layer.</h2>
+      <div class="build-flow-stack">
+        <article class="build-flow-item reveal reveal-d2">
           <div class="build-step">Build 01</div>
           <h3 class="build-title">Connect your account.</h3>
           <p class="build-copy">Secure OAuth connection to Facebook and select the ad account you want us to run.</p>
-        </div>
-        <div class="build-panel" data-build-panel="1">
+        </article>
+        <article class="build-flow-item reveal reveal-d3">
           <div class="build-step">Build 02</div>
           <h3 class="build-title">Generate strategy + creative.</h3>
           <p class="build-copy">The system drafts campaign direction, hooks, and creative variants based on your setup.</p>
-        </div>
-        <div class="build-panel" data-build-panel="2">
+        </article>
+        <article class="build-flow-item reveal reveal-d4">
           <div class="build-step">Build 03</div>
           <h3 class="build-title">Launch and optimize live.</h3>
           <p class="build-copy">Campaigns are monitored and optimized continuously as performance data updates.</p>
-        </div>
-        <div class="build-panel" data-build-panel="3">
+        </article>
+        <article class="build-flow-item reveal reveal-d5">
           <div class="build-step">Build 04</div>
           <h3 class="build-title">Scale winners automatically.</h3>
           <p class="build-copy">Top performers get more budget while weak ad sets are reduced or paused.</p>
-        </div>
-        <div class="build-progress"><div id="build-progress-fill" class="build-progress-fill"></div></div>
-        <div class="build-markers"><span>Connect</span><span>Create</span><span>Optimize</span><span>Scale</span></div>
+        </article>
       </div>
     </div>
   </section>
@@ -516,31 +469,6 @@ export function homePage({ isLoggedIn = false } = {}) {
       draw();
     })();
 
-    (function initScrollBuild() {
-      var section = document.getElementById('scroll-build');
-      var panels = Array.prototype.slice.call(document.querySelectorAll('.build-panel'));
-      var fill = document.getElementById('build-progress-fill');
-      if (!section || !panels.length) return;
-
-      function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
-
-      function update() {
-        var rect = section.getBoundingClientRect();
-        var total = Math.max(1, section.offsetHeight - window.innerHeight);
-        var progress = clamp((-rect.top) / total, 0, 1);
-        var idx = Math.min(panels.length - 1, Math.floor(progress * panels.length));
-
-        panels.forEach(function(panel, i) {
-          if (i === idx) panel.classList.add('active');
-          else panel.classList.remove('active');
-        });
-        if (fill) fill.style.width = (progress * 100).toFixed(2) + '%';
-      }
-
-      window.addEventListener('scroll', update, { passive: true });
-      window.addEventListener('resize', update);
-      update();
-    })();
   </script>
 `
   });
