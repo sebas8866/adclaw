@@ -21,9 +21,9 @@ export function homePage({ isLoggedIn = false } = {}) {
     }
     .hero-wrap {
       display: grid;
-      grid-template-columns: 1.1fr 0.9fr;
+      grid-template-columns: 1.2fr 0.8fr;
       gap: 26px;
-      align-items: stretch;
+      align-items: start;
     }
     .hero-copy p { max-width: 620px; }
     .hero-subtle {
@@ -83,17 +83,21 @@ export function homePage({ isLoggedIn = false } = {}) {
       border-radius: 20px;
       overflow: hidden;
       background: rgba(7, 11, 22, 0.92);
-      min-height: 460px;
+      width: 100%;
+      max-width: 520px;
+      aspect-ratio: 16 / 10;
+      justify-self: end;
       display: flex;
-      align-items: stretch;
+      align-items: center;
+      justify-content: center;
       box-shadow: 0 20px 50px rgba(6, 10, 20, 0.4);
     }
     .hero-video video {
       width: 100%;
       height: 100%;
-      min-height: 460px;
-      object-fit: cover;
+      object-fit: contain;
       display: block;
+      background: rgba(3, 6, 14, 0.92);
     }
     .logo-strip {
       margin-top: 24px;
@@ -233,6 +237,11 @@ export function homePage({ isLoggedIn = false } = {}) {
     @media (max-width: 980px) {
       .hero-wrap { grid-template-columns: 1fr; }
       .hero-metrics { grid-template-columns: 1fr; }
+      .hero-video {
+        max-width: 100%;
+        justify-self: stretch;
+        aspect-ratio: 16 / 9;
+      }
       .build-grid { grid-template-columns: 1fr; }
       .process { grid-template-columns: 1fr; }
     }
