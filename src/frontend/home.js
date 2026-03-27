@@ -1,10 +1,10 @@
 import { pageWrapper } from './shared.js';
 
-export function homePage() {
+export function homePage({ isLoggedIn = false } = {}) {
   return pageWrapper({
     title: 'Autonomous AI Ad Agency',
     activeNav: 'home',
-    publicNav: true,
+    publicNav: !isLoggedIn,
     body: `
   <style>
     .home-hero {

@@ -25,7 +25,8 @@ export function createFrontendRouter() {
   });
 
   router.get('/', (req, res) => {
-    res.type('html').send(homePage());
+    const isLoggedIn = !!(req.cookies?.sb_access_token || req.cookies?.sb_refresh_token);
+    res.type('html').send(homePage({ isLoggedIn }));
   });
 
   router.get('/privacy', (req, res) => {
