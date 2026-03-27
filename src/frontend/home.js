@@ -185,6 +185,8 @@ export function homePage({ isLoggedIn = false } = {}) {
       transform: translateY(10px);
       transition: opacity 0.28s ease, transform 0.28s ease;
     }
+    /* Fallback: avoid blank rail if JS fails to init */
+    .build-stage:first-child,
     .build-stage.active {
       display: block;
       opacity: 1;
@@ -595,36 +597,53 @@ export function homePage({ isLoggedIn = false } = {}) {
     })();
 
     (function initBuildFlowScroll() {
-      var section = document.querySelector('[data-build-flow]');
-      var stages = Array.prototype.slice.call(document.querySelectorAll('[data-build-stage]'));
-      var fill = document.getElementById('build-progress-fill');
-      var label = document.getElementById('build-flow-stage-label');
-      if (!section || !stages.length) return;
+      function setup() {
+        var section = document.querySelector('[data-build-flow]');
+        var stages = Array.prototype.slice.call(document.querySelectorAll('[data-build-stage]'));
+        var fill = document.getElementById('build-progress-fill');
+        var label = document.getElementById('build-flow-stage-label');
+        if (!section || !stages.length) return;
 
-      function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
+        function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
 
-      function setActive(idx) {
-        stages.forEach(function(s, i) {
-          if (i === idx) s.classList.add('active');
-          else s.classList.remove('active');
-        });
-        if (label) label.textContent = 'Build 0' + (idx + 1);
-      }
+        function setActive(idx) {
+          stages.forEach(function(s, i) {
+            if (i === idx) s.classList.add('active');
+            else s.classList.remove('active');
+          });
+          if (label) label.textContent = 'Build 0' + (idx + 1);
+        }
 
-      function update() {
-        var rect = section.getBoundingClientRect();
-        var total = Math.max(1, section.offsetHeight - window.innerHeight);
-        var progress = clamp((-rect.top) / total, 0, 1);
-        var idx = Math.min(stages.length - 1, Math.floor(progress * stages.length));
-        setActive(idx);
-        if (fill) fill.style.width = (progress * 100).toFixed(2) + '%';
-      }
+        var scroller = document.scrollingElement || document.documentElement;
+        var raf = 0;
 
-      window.addEventListener('scroll', update, { passive: true });
-      window.addEventListener('resize', function() {
+        function update() {
+          if (raf) return;
+          raf = requestAnimationFrame(function() {
+            raf = 0;
+            var rect = section.getBoundingClientRect();
+            var total = Math.max(1, section.offsetHeight - window.innerHeight);
+            var progress = clamp((-rect.top) / total, 0, 1);
+            var idx = Math.min(stages.length - 1, Math.floor(progress * stages.length));
+            setActive(idx);
+            if (fill) fill.style.width = (progress * 100).toFixed(2) + '%';
+          });
+        }
+
+        window.addEventListener('scroll', update, { passive: true });
+        if (scroller && scroller !== window) scroller.addEventListener('scroll', update, { passive: true });
+        window.addEventListener('resize', update);
         update();
-      });
-      update();
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', setup, { once: true });
+      } else {
+        setup();
+      }
+
+      // If this page is ever loaded via client-side routing, re-try once.
+      window.addEventListener('popstate', function() { setTimeout(setup, 0); });
     })();
 
   </script>
