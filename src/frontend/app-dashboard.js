@@ -8,8 +8,8 @@ export function appDashboardPage() {
   <style>
     .dash-page {
       position: relative;
-      padding: 72px 0 112px;
-      border-top: 1px solid var(--border);
+      padding: 92px 0 120px;
+      border-top: 1px solid rgba(126, 166, 255, 0.18);
     }
     .dash-inner { position: relative; z-index: 1; }
     .dash-stat-label {
@@ -35,7 +35,7 @@ export function appDashboardPage() {
       margin-top: 6px;
     }
     .dash-card-split {
-      border-bottom: 1px solid var(--border);
+      border-bottom: 1px solid rgba(126, 166, 255, 0.18);
       padding: 20px 24px;
       display: flex;
       align-items: center;
@@ -51,10 +51,10 @@ export function appDashboardPage() {
     <div class="container dash-inner">
       <div class="flex justify-between items-center" style="flex-wrap:wrap;gap:20px;margin-bottom:52px;">
         <div>
-          <h1 class="text-section" style="margin-bottom:10px;">Dashboard</h1>
-          <p class="text-body" style="font-size:14px;max-width:420px;">Live view of swarms, capacity, and platform health.</p>
+          <h1 class="text-section" style="margin-bottom:10px;">Mission Control</h1>
+          <p class="text-body" style="font-size:14px;max-width:520px;">Track active swarms, system telemetry, and campaign operations in one continuous surface.</p>
         </div>
-        <a href="/app/launch" class="btn btn-primary">Launch New Swarm</a>
+        <a href="/app/launch" class="btn btn-primary">Launch Swarm</a>
       </div>
 
       <div class="grid-4" id="stat-cards">

@@ -1,146 +1,196 @@
 import { pageWrapper, SUPABASE_URL, SUPABASE_ANON_KEY } from './shared.js';
 
-export function loginPage(error) {
-  return pageWrapper({
-    title: 'Sign in',
-    noAuth: true,
-    body: `
+function authShell({ title, subtitle, ctaText, ctaHref, submitId, submitText, formHtml, rightTitle, rightCopy, statsHtml, error, submitHandler }) {
+  return `
   <style>
-    .auth-wrap {
-      min-height: 100vh; display: flex;
+    .auth-shell {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background: radial-gradient(900px 500px at 8% -10%, rgba(108,173,255,0.16), transparent 55%), var(--bg);
     }
     .auth-left {
-      flex: 1; display: flex; align-items: center; justify-content: center;
-      padding: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 46px 28px;
     }
     .auth-right {
-      flex: 1; position: relative; overflow: hidden;
-      display: flex; align-items: center; justify-content: center;
-      background: #05070d;
-      border-left: 1px solid var(--border);
+      border-left: 1px solid rgba(124, 162, 255, 0.2);
+      background: linear-gradient(180deg, rgba(12, 18, 36, 0.95), rgba(8, 12, 23, 0.95));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 48px;
     }
-    @media (max-width: 900px) { .auth-right { display: none; } }
-
-    .auth-right-content {
-      position: relative; z-index: 1; padding: 60px;
-      max-width: 440px;
+    .auth-panel {
+      width: 100%;
+      max-width: 430px;
     }
-    .auth-right::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      border-left: 1px solid rgba(82, 150, 255, 0.12);
-      pointer-events: none;
-    }
-
-    .auth-box { max-width: 380px; width: 100%; }
-    .auth-logo {
+    .auth-brand {
       font-family: var(--font-display);
-      font-size: 22px; font-weight: 700;
-      display: flex; align-items: center; gap: 8px;
-      margin-bottom: 40px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 24px;
+      color: #dce9ff;
     }
-    .auth-logo svg { width: 24px; height: 24px; }
+    .auth-brand svg { width: 18px; height: 18px; }
+    .auth-card {
+      border: 1px solid rgba(127, 166, 255, 0.24);
+      background: rgba(12, 19, 36, 0.9);
+      border-radius: 20px;
+      padding: 26px;
+    }
     .auth-title {
       font-family: var(--font-display);
-      font-size: 28px; font-weight: 700;
-      letter-spacing: -0.02em;
-      margin-bottom: 6px;
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
     }
-    .auth-sub { font-size: 14px; color: var(--text-muted); margin-bottom: 32px; }
+    .auth-sub { margin-top: 8px; font-size: 14px; color: var(--text-muted); }
     .auth-error {
-      padding: 10px 14px; border-radius: var(--r-md);
-      background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2);
-      color: var(--red); font-size: 13px; margin-bottom: 20px;
+      margin-top: 16px;
+      border-radius: 12px;
+      border: 1px solid rgba(239,68,68,0.3);
+      background: rgba(239,68,68,0.08);
+      color: var(--red);
+      font-size: 13px;
+      padding: 10px 12px;
     }
-    .auth-form .form-input {
-      background: var(--bg-surface); border-color: var(--border);
-      padding: 12px 16px;
+    .auth-form { margin-top: 22px; }
+    .auth-form .form-input { background: rgba(8, 13, 24, 0.9); }
+    .auth-foot {
+      margin-top: 18px;
+      text-align: center;
+      font-size: 13px;
+      color: var(--text-muted);
     }
-    .auth-footer {
-      margin-top: 24px; text-align: center;
-      font-size: 13px; color: var(--text-muted);
+    .auth-foot a { color: #cbe0ff; font-weight: 600; }
+    .auth-foot a:hover { color: #fff; }
+    .auth-right-inner {
+      width: 100%;
+      max-width: 430px;
     }
-    .auth-footer a { color: var(--primary); font-weight: 500; }
-    .auth-footer a:hover { color: var(--primary-hover); }
-
-    .auth-quote {
+    .auth-tag {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #b7d6ff;
+    }
+    .auth-right-title {
+      margin-top: 16px;
       font-family: var(--font-display);
-      font-size: 24px; font-weight: 600;
-      letter-spacing: -0.02em; line-height: 1.4;
-      color: var(--text);
+      font-size: 34px;
+      font-weight: 800;
+      line-height: 1.06;
+      letter-spacing: -0.03em;
+      color: #e8f2ff;
     }
-    .auth-quote-attr {
-      margin-top: 20px; font-size: 13px; color: var(--text-muted);
+    .auth-right-copy {
+      margin-top: 14px;
+      color: var(--text-secondary);
+      font-size: 14px;
+      line-height: 1.7;
     }
-    .auth-feature {
-      display: flex; align-items: flex-start; gap: 14px;
-      margin-top: 28px; padding-top: 28px;
-      border-top: 1px solid var(--border);
+    .auth-stats {
+      margin-top: 22px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
     }
-    .auth-feature-icon {
-      width: 36px; height: 36px; border-radius: var(--r-sm);
-      background: rgba(82, 150, 255, 0.12);
-      border: 1px solid rgba(82, 150, 255, 0.24);
-      display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0;
+    .auth-stat {
+      border: 1px solid rgba(132, 173, 255, 0.24);
+      border-radius: 14px;
+      background: rgba(107, 170, 255, 0.08);
+      padding: 14px;
     }
-    .auth-feature h4 { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
-    .auth-feature p { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+    .auth-stat .v {
+      font-family: var(--font-mono);
+      font-size: 20px;
+      color: #d8e8ff;
+      font-weight: 600;
+    }
+    .auth-stat .k {
+      margin-top: 6px;
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-family: var(--font-mono);
+    }
+    @media (max-width: 980px) {
+      .auth-shell { grid-template-columns: 1fr; }
+      .auth-right { border-left: none; border-top: 1px solid rgba(124,162,255,0.2); }
+    }
   </style>
 
-  <div class="auth-wrap">
+  <div class="auth-shell">
     <div class="auth-left">
-      <div class="auth-box">
-        <div class="auth-logo">
-          <svg viewBox="0 0 24 24" fill="none"><path d="M13 3L4 14h7l-2 7 9-11h-7l2-7z" fill="var(--primary)" stroke="var(--primary)" stroke-width="1.5" stroke-linejoin="round"/></svg>
+      <div class="auth-panel">
+        <a href="/" class="auth-brand">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M13 3L4 14h7l-2 7 9-11h-7l2-7z" fill="#8ec0ff" stroke="#8ec0ff" stroke-width="1.5" stroke-linejoin="round"/></svg>
           AdClaw
-        </div>
-        <h1 class="auth-title">Welcome back</h1>
-        <p class="auth-sub">Sign in to your account to continue.</p>
-        ${error ? `<div class="auth-error">${error}</div>` : ''}
-        <form class="auth-form" id="login-form" onsubmit="handleLogin(event)">
-          <div class="form-group">
-            <label>Email</label>
-            <input type="email" id="inp-email" class="form-input" placeholder="you@company.com" required>
-          </div>
-          <div class="form-group">
-            <label>Password</label>
-            <input type="password" id="inp-pass" class="form-input" placeholder="Your password" required>
-          </div>
-          <button type="submit" id="btn-login" class="btn btn-primary" style="width:100%;justify-content:center;padding:12px;">Sign in</button>
-        </form>
-        <div class="auth-footer">
-          Don't have an account? <a href="/auth/signup">Create one</a>
+        </a>
+        <div class="auth-card">
+          <h1 class="auth-title">${title}</h1>
+          <p class="auth-sub">${subtitle}</p>
+          ${error ? `<div class="auth-error">${error}</div>` : ''}
+          <form class="auth-form" onsubmit="${submitHandler}(event)">
+            ${formHtml}
+            <button type="submit" id="${submitId}" class="btn btn-primary" style="width:100%;justify-content:center;">${submitText}</button>
+          </form>
+          <div class="auth-foot">${ctaText} <a href="${ctaHref}">${ctaHref.includes('signup') ? 'Create one' : 'Sign in'}</a></div>
         </div>
       </div>
     </div>
     <div class="auth-right">
-      <div class="auth-right-content">
-        <p class="auth-quote">Six AI agents running your ad campaigns 24/7. No human intervention needed.</p>
-        <p class="auth-quote-attr">Autonomous advertising, finally.</p>
-        <div class="auth-feature">
-          <div class="auth-feature-icon">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
-          </div>
-          <div>
-            <h4>Launches in under 5 minutes</h4>
-            <p>Connect your ad accounts, paste your business page, and your swarm takes over immediately.</p>
-          </div>
-        </div>
-        <div class="auth-feature">
-          <div class="auth-feature-icon">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 8.5A3.5 3.5 0 1 0 12 15.5A3.5 3.5 0 1 0 12 8.5Z" stroke="currentColor" stroke-width="1.7"/><path d="M19.4 15a7.9 7.9 0 0 0 .1-2l2-1.5-2-3.4-2.4.6a8.2 8.2 0 0 0-1.7-1l-.4-2.5h-4l-.4 2.5a8.2 8.2 0 0 0-1.7 1L6.5 8l-2 3.5 2 1.5a7.9 7.9 0 0 0 .1 2l-2 1.5 2 3.4 2.4-.6c.5.4 1.1.7 1.7 1l.4 2.5h4l.4-2.5c.6-.3 1.2-.6 1.7-1l2.4.6 2-3.4-2-1.5z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
-          </div>
-          <div>
-            <h4>Optimizes every 15 minutes</h4>
-            <p>Three AI tiers work together — local Ollama, Kimi research, and Claude Opus for strategic decisions.</p>
-          </div>
-        </div>
+      <div class="auth-right-inner">
+        <div class="auth-tag">Autonomous Ad Operations</div>
+        <h2 class="auth-right-title">${rightTitle}</h2>
+        <p class="auth-right-copy">${rightCopy}</p>
+        <div class="auth-stats">${statsHtml}</div>
       </div>
     </div>
   </div>
-`,
+`;
+}
+
+export function loginPage(error) {
+  return pageWrapper({
+    title: 'Sign in',
+    noAuth: true,
+    body: authShell({
+      title: 'Welcome back',
+      subtitle: 'Sign in to resume your autonomous campaign workflows.',
+      ctaText: "Don't have an account?",
+      ctaHref: '/auth/signup',
+      submitId: 'btn-login',
+      submitText: 'Sign in',
+      submitHandler: 'handleLogin',
+      error,
+      formHtml: `
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="inp-email" class="form-input" placeholder="you@company.com" required>
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="inp-pass" class="form-input" placeholder="Your password" required>
+        </div>
+      `,
+      rightTitle: 'Your ad accounts, run by a focused AI control layer.',
+      rightCopy: 'Connect Facebook, select account access, and let the swarm monitor performance and adjust strategy continuously.',
+      statsHtml: `
+        <div class="auth-stat"><div class="v">6</div><div class="k">Live modules</div></div>
+        <div class="auth-stat"><div class="v">15m</div><div class="k">Optimization loop</div></div>
+        <div class="auth-stat"><div class="v">24/7</div><div class="k">Runtime</div></div>
+        <div class="auth-stat"><div class="v">ROAS</div><div class="k">Driven workflow</div></div>
+      `,
+    }),
     scripts: `
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script>
@@ -175,136 +225,34 @@ export function signupPage(error) {
   return pageWrapper({
     title: 'Create account',
     noAuth: true,
-    body: `
-  <style>
-    .auth-wrap {
-      min-height: 100vh; display: flex;
-    }
-    .auth-left {
-      flex: 1; display: flex; align-items: center; justify-content: center;
-      padding: 40px;
-    }
-    .auth-right {
-      flex: 1; position: relative; overflow: hidden;
-      display: flex; align-items: center; justify-content: center;
-      background: #05070d;
-      border-left: 1px solid var(--border);
-    }
-    @media (max-width: 900px) { .auth-right { display: none; } }
-
-    .auth-right-content {
-      position: relative; z-index: 1; padding: 60px;
-      max-width: 440px;
-    }
-    .auth-right::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      border-left: 1px solid rgba(82, 150, 255, 0.12);
-      pointer-events: none;
-    }
-
-    .auth-box { max-width: 380px; width: 100%; }
-    .auth-logo {
-      font-family: var(--font-display);
-      font-size: 22px; font-weight: 700;
-      display: flex; align-items: center; gap: 8px;
-      margin-bottom: 40px;
-    }
-    .auth-logo svg { width: 24px; height: 24px; }
-    .auth-title {
-      font-family: var(--font-display);
-      font-size: 28px; font-weight: 700;
-      letter-spacing: -0.02em; margin-bottom: 6px;
-    }
-    .auth-sub { font-size: 14px; color: var(--text-muted); margin-bottom: 32px; }
-    .auth-error {
-      padding: 10px 14px; border-radius: var(--r-md);
-      background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2);
-      color: var(--red); font-size: 13px; margin-bottom: 20px;
-    }
-    .auth-form .form-input {
-      background: var(--bg-surface); border-color: var(--border);
-    }
-    .auth-footer {
-      margin-top: 24px; text-align: center;
-      font-size: 13px; color: var(--text-muted);
-    }
-    .auth-footer a { color: var(--primary); font-weight: 500; }
-    .auth-quote {
-      font-family: var(--font-display);
-      font-size: 24px; font-weight: 600;
-      letter-spacing: -0.02em; line-height: 1.4;
-    }
-    .auth-stats {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
-      margin-top: 32px;
-    }
-    .auth-stat {
-      padding: 20px;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: var(--r-md);
-    }
-    .auth-stat-val {
-      font-family: var(--font-mono);
-      font-size: 28px; font-weight: 700;
-      color: var(--primary);
-    }
-    .auth-stat-label { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
-  </style>
-
-  <div class="auth-wrap">
-    <div class="auth-left">
-      <div class="auth-box">
-        <div class="auth-logo">
-          <svg viewBox="0 0 24 24" fill="none"><path d="M13 3L4 14h7l-2 7 9-11h-7l2-7z" fill="var(--primary)" stroke="var(--primary)" stroke-width="1.5" stroke-linejoin="round"/></svg>
-          AdClaw
+    body: authShell({
+      title: 'Create account',
+      subtitle: 'Start your first autonomous ad workflow in minutes.',
+      ctaText: 'Already have an account?',
+      ctaHref: '/auth/login',
+      submitId: 'btn-signup',
+      submitText: 'Create account',
+      submitHandler: 'handleSignup',
+      error,
+      formHtml: `
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="inp-email" class="form-input" placeholder="you@company.com" required>
         </div>
-        <h1 class="auth-title">Create your account</h1>
-        <p class="auth-sub">Start running autonomous ad campaigns in minutes.</p>
-        ${error ? `<div class="auth-error">${error}</div>` : ''}
-        <form class="auth-form" onsubmit="handleSignup(event)">
-          <div class="form-group">
-            <label>Email</label>
-            <input type="email" id="inp-email" class="form-input" placeholder="you@company.com" required>
-          </div>
-          <div class="form-group">
-            <label>Password</label>
-            <input type="password" id="inp-pass" class="form-input" placeholder="Min. 6 characters" required minlength="6">
-          </div>
-          <button type="submit" id="btn-signup" class="btn btn-primary" style="width:100%;justify-content:center;padding:12px;">Create account</button>
-        </form>
-        <div class="auth-footer">
-          Already have an account? <a href="/auth/login">Sign in</a>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="inp-pass" class="form-input" placeholder="Min. 6 characters" required minlength="6">
         </div>
-      </div>
-    </div>
-    <div class="auth-right">
-      <div class="auth-right-content">
-        <p class="auth-quote">Join the future of advertising automation.</p>
-        <div class="auth-stats">
-          <div class="auth-stat">
-            <div class="auth-stat-val">6</div>
-            <div class="auth-stat-label">AI Agents</div>
-          </div>
-          <div class="auth-stat">
-            <div class="auth-stat-val">24/7</div>
-            <div class="auth-stat-label">Autonomous</div>
-          </div>
-          <div class="auth-stat">
-            <div class="auth-stat-val">15m</div>
-            <div class="auth-stat-label">Optimization Cycle</div>
-          </div>
-          <div class="auth-stat">
-            <div class="auth-stat-val">$0</div>
-            <div class="auth-stat-label">To Start</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-`,
+      `,
+      rightTitle: 'Set up once. Let the system execute daily.',
+      rightCopy: 'From research and creative generation to account-safe launch and optimization, AdClaw provides a complete operating workflow.',
+      statsHtml: `
+        <div class="auth-stat"><div class="v">$0</div><div class="k">To start</div></div>
+        <div class="auth-stat"><div class="v">Meta</div><div class="k">Native OAuth</div></div>
+        <div class="auth-stat"><div class="v">3</div><div class="k">Intelligence tiers</div></div>
+        <div class="auth-stat"><div class="v">1</div><div class="k">Unified dashboard</div></div>
+      `,
+    }),
     scripts: `
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script>

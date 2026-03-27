@@ -10,45 +10,47 @@ export function pageWrapper({ title, body, activeNav = '', scripts = '', noAuth 
   <title>${title} — AdClaw</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
     :root {
-      --bg: #000000;
-      --bg-surface: #0a0a0a;
-      --bg-elevated: #111111;
-      --bg-hover: #171717;
-      --border: rgba(255, 255, 255, 0.06);
-      --border-hover: rgba(255, 255, 255, 0.14);
-      --border-active: rgba(82, 150, 255, 0.45);
-      --text: #f6f7fb;
-      --text-secondary: #c7cbda;
-      --text-muted: #9aa2b8;
-      --text-dim: #656c83;
-      --primary: #5296ff;
-      --primary-hover: #7aacff;
-      --primary-soft: rgba(82, 150, 255, 0.14);
+      --bg: #05070f;
+      --bg-surface: #0c1121;
+      --bg-elevated: #111933;
+      --bg-hover: #13203f;
+      --border: rgba(124, 162, 255, 0.18);
+      --border-hover: rgba(144, 176, 255, 0.32);
+      --border-active: rgba(110, 173, 255, 0.55);
+      --text: #eef3ff;
+      --text-secondary: #b6c4ea;
+      --text-muted: #8093c3;
+      --text-dim: #6478ab;
+      --primary: #6cadff;
+      --primary-hover: #9cc7ff;
+      --primary-soft: rgba(108, 173, 255, 0.16);
       --green: #10b981;
       --red: #ef4444;
       --amber: #f59e0b;
-      --blue: #5296ff;
-      --font-display: 'Bricolage Grotesque', serif;
-      --font-body: 'DM Sans', sans-serif;
-      --font-mono: 'JetBrains Mono', monospace;
+      --blue: #6cadff;
+      --font-display: 'Manrope', sans-serif;
+      --font-body: 'Manrope', sans-serif;
+      --font-mono: 'IBM Plex Mono', monospace;
       --r-sm: 8px;
-      --r-md: 12px;
-      --r-lg: 18px;
-      --r-xl: 24px;
+      --r-md: 14px;
+      --r-lg: 20px;
+      --r-xl: 28px;
     }
 
     html { scroll-behavior: smooth; }
 
     body {
       font-family: var(--font-body);
-      background: var(--bg);
+      background: radial-gradient(1200px 600px at 20% -10%, rgba(98, 157, 255, 0.18), transparent 50%),
+                  radial-gradient(800px 500px at 100% -10%, rgba(121, 95, 255, 0.14), transparent 46%),
+                  var(--bg);
       color: var(--text);
-      line-height: 1.6;
+      line-height: 1.65;
       -webkit-font-smoothing: antialiased;
     }
 
@@ -56,8 +58,8 @@ export function pageWrapper({ title, body, activeNav = '', scripts = '', noAuth 
 
     .reveal {
       opacity: 0;
-      transform: translateY(16px);
-      transition: opacity 0.5s ease, transform 0.5s ease;
+      transform: translateY(14px);
+      transition: opacity 0.45s ease, transform 0.45s ease;
     }
     .reveal.visible { opacity: 1; transform: translateY(0); }
     .reveal-d1 { transition-delay: 0.04s; }
@@ -76,38 +78,38 @@ export function pageWrapper({ title, body, activeNav = '', scripts = '', noAuth 
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 28px;
-      height: 64px;
-      background: rgba(0, 0, 0, 0.86);
-      backdrop-filter: blur(18px);
-      border-bottom: 1px solid var(--border);
+      padding: 0 26px;
+      height: 70px;
+      background: rgba(5, 7, 15, 0.78);
+      backdrop-filter: blur(14px) saturate(1.2);
+      border-bottom: 1px solid rgba(124, 162, 255, 0.16);
     }
     .nav-brand {
       font-family: var(--font-display);
-      font-size: 18px;
-      font-weight: 700;
+      font-size: 17px;
+      font-weight: 800;
       display: flex;
       align-items: center;
       gap: 8px;
     }
-    .nav-brand svg { width: 20px; height: 20px; }
-    .nav-links { display: flex; gap: 10px; }
+    .nav-brand svg { width: 18px; height: 18px; }
+    .nav-links { display: flex; gap: 8px; }
     .nav-links a {
-      padding: 8px 12px;
+      padding: 8px 11px;
       border-radius: var(--r-sm);
       font-size: 13px;
-      font-weight: 500;
+      font-weight: 600;
       color: var(--text-muted);
       transition: color 0.2s, background 0.2s;
     }
     .nav-links a:hover {
-      color: var(--text);
-      background: var(--bg-surface);
+      color: #fff;
+      background: rgba(123, 166, 255, 0.1);
     }
     .nav-links a.active {
       color: var(--text);
-      background: var(--primary-soft);
-      border: 1px solid rgba(82, 150, 255, 0.25);
+      background: linear-gradient(180deg, rgba(122, 170, 255, 0.2), rgba(122, 170, 255, 0.08));
+      border: 1px solid rgba(122, 170, 255, 0.34);
     }
     .nav-user {
       display: flex;
@@ -116,7 +118,7 @@ export function pageWrapper({ title, body, activeNav = '', scripts = '', noAuth 
       font-size: 13px;
       color: var(--text-muted);
     }
-    .nav-user a { color: var(--text-secondary); font-weight: 500; }
+    .nav-user a { color: var(--text-secondary); font-weight: 600; }
     .nav-user a:hover { color: var(--text); }
     @media (max-width: 768px) {
       .nav-links { display: none; }
@@ -127,41 +129,42 @@ export function pageWrapper({ title, body, activeNav = '', scripts = '', noAuth 
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      padding: 10px 22px;
+      padding: 10px 20px;
       border-radius: var(--r-md);
       font-size: 13px;
       font-weight: 600;
       font-family: var(--font-body);
       border: none;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.22s ease;
       text-decoration: none;
       line-height: 1;
     }
     .btn-primary {
-      background: #ffffff;
-      color: #080808;
-      border: 1px solid #ffffff;
+      background: linear-gradient(180deg, #7db8ff, #6cadff);
+      color: #031028;
+      border: 1px solid rgba(156, 199, 255, 0.6);
+      box-shadow: 0 12px 30px rgba(88, 143, 255, 0.28);
     }
     .btn-primary:hover {
-      background: #eceff7;
-      border-color: #eceff7;
+      background: linear-gradient(180deg, #a8ceff, #82bcff);
+      border-color: rgba(192, 219, 255, 0.75);
       transform: translateY(-1px);
     }
     .btn-secondary {
       background: var(--bg-surface);
       color: var(--text);
-      border: 1px solid var(--border-hover);
+      border: 1px solid var(--border);
     }
     .btn-secondary:hover {
-      border-color: rgba(82, 150, 255, 0.35);
+      border-color: rgba(139, 177, 255, 0.45);
       background: var(--bg-elevated);
-      color: #d8e5ff;
+      color: #eaf1ff;
     }
     .btn-ghost {
       background: transparent;
       color: var(--text-secondary);
-      border: 1px solid var(--border);
+      border: 1px solid rgba(122, 162, 250, 0.22);
     }
     .btn-ghost:hover {
       border-color: var(--border-hover);
@@ -174,47 +177,43 @@ export function pageWrapper({ title, body, activeNav = '', scripts = '', noAuth 
     .btn-lg { padding: 14px 30px; font-size: 14px; }
     .btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none !important; }
 
-    .container { max-width: 1160px; margin: 0 auto; padding: 0 32px; }
+    .container { max-width: 1180px; margin: 0 auto; padding: 0 30px; }
     .section { padding: 112px 0; }
     @media (max-width: 900px) {
       .section { padding: 88px 0; }
       .container { padding: 0 20px; }
     }
 
-    .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
-    .grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
-    .grid-4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; }
     @media (max-width: 980px) { .grid-3, .grid-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
     @media (max-width: 640px) { .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; } }
 
     .card {
-      background: var(--bg-surface);
-      border: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(15, 23, 45, 0.92), rgba(12, 17, 33, 0.92));
+      border: 1px solid rgba(128, 166, 255, 0.18);
       border-radius: var(--r-lg);
       padding: 24px;
       transition: border-color 0.2s ease, background 0.2s ease;
     }
-    .card:hover { border-color: var(--border-hover); background: var(--bg-elevated); }
+    .card:hover { border-color: rgba(154, 188, 255, 0.34); background: linear-gradient(180deg, rgba(17, 26, 49, 0.95), rgba(13, 20, 37, 0.95)); }
 
     .text-hero {
       font-family: var(--font-display);
-      font-size: clamp(46px, 6.8vw, 90px);
-      font-weight: 700;
+      font-size: clamp(48px, 7vw, 92px);
+      font-weight: 800;
       letter-spacing: -0.038em;
       line-height: 0.98;
     }
     .text-section {
       font-family: var(--font-display);
-      font-size: clamp(30px, 4.3vw, 52px);
-      font-weight: 700;
+      font-size: clamp(30px, 4.1vw, 54px);
+      font-weight: 800;
       letter-spacing: -0.028em;
       line-height: 1.05;
     }
-    .text-headline {
-      font-family: var(--font-display);
-      font-size: 18px;
-      font-weight: 600;
-    }
+    .text-headline { font-family: var(--font-display); font-size: 18px; font-weight: 700; }
     .text-body {
       font-size: 15px;
       color: var(--text-secondary);
@@ -230,7 +229,7 @@ export function pageWrapper({ title, body, activeNav = '', scripts = '', noAuth 
       font-family: var(--font-mono);
       font-size: 10px;
       font-weight: 600;
-      color: #b8d2ff;
+      color: #cde1ff;
       letter-spacing: 0.11em;
       text-transform: uppercase;
     }
@@ -239,7 +238,7 @@ export function pageWrapper({ title, body, activeNav = '', scripts = '', noAuth 
       width: 6px;
       height: 6px;
       border-radius: 999px;
-      background: var(--primary);
+      background: linear-gradient(180deg, #9bc8ff, #6cadff);
     }
 
     .form-group { margin-bottom: 20px; }
@@ -253,15 +252,19 @@ export function pageWrapper({ title, body, activeNav = '', scripts = '', noAuth 
     .form-input {
       width: 100%;
       padding: 12px 14px;
-      background: #050505;
-      border: 1px solid var(--border);
+      background: rgba(11, 16, 29, 0.9);
+      border: 1px solid rgba(124, 162, 255, 0.2);
       border-radius: var(--r-md);
       color: var(--text);
       font-size: 14px;
       font-family: var(--font-body);
       transition: border-color 0.2s;
     }
-    .form-input:focus { outline: none; border-color: var(--primary); }
+    .form-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(108, 173, 255, 0.12);
+    }
     .form-input::placeholder { color: var(--text-dim); }
     textarea.form-input { resize: vertical; }
 
@@ -283,7 +286,7 @@ export function pageWrapper({ title, body, activeNav = '', scripts = '', noAuth 
     .dot-red { background: var(--red); }
     .dot-orange { background: var(--amber); }
 
-    .table-wrap { overflow-x: auto; }
+    .table-wrap { overflow-x: auto; border: 1px solid rgba(127, 165, 255, 0.18); border-radius: 14px; }
     table { width: 100%; border-collapse: collapse; }
     th {
       text-align: left;
@@ -293,15 +296,15 @@ export function pageWrapper({ title, body, activeNav = '', scripts = '', noAuth 
       text-transform: uppercase;
       letter-spacing: 0.06em;
       padding: 12px 16px;
-      border-bottom: 1px solid var(--border);
+      border-bottom: 1px solid rgba(127, 165, 255, 0.16);
     }
     td {
       padding: 14px 16px;
-      border-bottom: 1px solid var(--border);
+      border-bottom: 1px solid rgba(127, 165, 255, 0.16);
       font-size: 13px;
       color: var(--text-secondary);
     }
-    tr:hover td { background: #0f0f0f; color: var(--text); }
+    tr:hover td { background: rgba(111, 160, 255, 0.08); color: var(--text); }
 
     .metric-row {
       display: flex;
@@ -309,7 +312,7 @@ export function pageWrapper({ title, body, activeNav = '', scripts = '', noAuth 
       align-items: center;
       gap: 12px;
       padding: 12px 0;
-      border-bottom: 1px solid var(--border);
+      border-bottom: 1px solid rgba(127, 165, 255, 0.16);
     }
     .metric-row:last-child { border-bottom: none; }
     .metric-label { font-size: 13px; color: var(--text-muted); }
@@ -317,7 +320,7 @@ export function pageWrapper({ title, body, activeNav = '', scripts = '', noAuth 
 
     .progress {
       height: 4px;
-      background: #0f0f0f;
+      background: rgba(119, 151, 220, 0.2);
       border-radius: 999px;
       overflow: hidden;
     }
@@ -325,7 +328,7 @@ export function pageWrapper({ title, body, activeNav = '', scripts = '', noAuth 
 
     .toast-container {
       position: fixed;
-      top: 78px;
+      top: 86px;
       right: 20px;
       z-index: 999;
       display: flex;
@@ -335,8 +338,8 @@ export function pageWrapper({ title, body, activeNav = '', scripts = '', noAuth 
     .toast {
       padding: 12px 16px;
       border-radius: var(--r-md);
-      background: #0f0f0f;
-      border: 1px solid var(--border-hover);
+      background: rgba(11, 16, 29, 0.96);
+      border: 1px solid rgba(128, 165, 248, 0.3);
       font-size: 13px;
       color: var(--text-secondary);
       max-width: 340px;
@@ -350,7 +353,7 @@ export function pageWrapper({ title, body, activeNav = '', scripts = '', noAuth 
     .spinner {
       width: 18px;
       height: 18px;
-      border: 2px solid rgba(255, 255, 255, 0.16);
+      border: 2px solid rgba(153, 185, 247, 0.28);
       border-top-color: var(--primary);
       border-radius: 50%;
       animation: spin 0.6s linear infinite;
@@ -367,7 +370,7 @@ export function pageWrapper({ title, body, activeNav = '', scripts = '', noAuth 
     .empty-state p { color: var(--text-muted); font-size: 13px; }
 
     .footer {
-      border-top: 1px solid var(--border);
+      border-top: 1px solid rgba(127, 165, 255, 0.18);
       padding: 26px 32px 40px;
       font-size: 12px;
       color: var(--text-dim);
@@ -382,7 +385,7 @@ export function pageWrapper({ title, body, activeNav = '', scripts = '', noAuth 
       flex-wrap: wrap;
     }
     .footer a { color: var(--text-dim); }
-    .footer a:hover { color: var(--text-secondary); }
+    .footer a:hover { color: #d9e7ff; }
 
     .mt-1 { margin-top: 8px; }
     .mt-2 { margin-top: 16px; }
@@ -402,7 +405,7 @@ export function pageWrapper({ title, body, activeNav = '', scripts = '', noAuth 
 <body>
   ${noAuth ? '' : `<nav class="nav">
     <a href="/" class="nav-brand">
-      <svg viewBox="0 0 24 24" fill="none"><path d="M13 3L4 14h7l-2 7 9-11h-7l2-7z" fill="#ffffff" stroke="#ffffff" stroke-width="1.5" stroke-linejoin="round"/></svg>
+      <svg viewBox="0 0 24 24" fill="none"><path d="M13 3L4 14h7l-2 7 9-11h-7l2-7z" fill="#8ec0ff" stroke="#8ec0ff" stroke-width="1.5" stroke-linejoin="round"/></svg>
       AdClaw
     </a>
     <div class="nav-links">

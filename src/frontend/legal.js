@@ -9,7 +9,7 @@ function legalStyles() {
   return `
   <style>
     .legal-wrap {
-      padding: 84px 0 116px;
+      padding: 102px 0 124px;
       max-width: 720px;
       margin: 0 auto;
     }

@@ -7,8 +7,8 @@ export function launchPage() {
     body: `
   <style>
     .launch-wrap {
-      padding: 84px 0 116px;
-      border-top: 1px solid var(--border);
+      padding: 96px 0 124px;
+      border-top: 1px solid rgba(126, 166, 255, 0.18);
     }
     .launch-hero {
       max-width: 720px;
@@ -50,6 +50,7 @@ export function launchPage() {
     .launch-card {
       border-radius: var(--r-xl);
       padding: 36px 40px;
+      border-color: rgba(128, 169, 255, 0.26);
     }
     @media (max-width: 640px) {
       .launch-card { padding: 28px 24px; }
@@ -201,7 +202,7 @@ export function launchPage() {
     }
 
     .review-panel {
-      background: #050505;
+      background: rgba(8, 12, 24, 0.86);
       border: 1px solid var(--border);
       border-radius: var(--r-lg);
       padding: 20px 22px;
