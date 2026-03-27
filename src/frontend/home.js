@@ -105,6 +105,7 @@ export function homePage({ isLoggedIn = false } = {}) {
     .build-flow {
       position: relative;
       padding: 112px 0;
+      min-height: 220vh;
     }
     .build-flow-inner {
       position: sticky;
@@ -383,16 +384,16 @@ export function homePage({ isLoggedIn = false } = {}) {
     <div class="container">
       <div class="build-flow-inner">
         <div class="build-flow-left">
-          <div class="build-flow-kicker reveal">From connect to scale</div>
-          <h2 class="build-flow-headline reveal reveal-d1">Connect. Create. Optimize. Scale.</h2>
-          <p class="build-flow-sub reveal reveal-d2">A single operating layer that moves from setup to live execution. Scroll to see each stage and what changes in the system.</p>
-          <div class="build-flow-meta reveal reveal-d3">
+          <div class="build-flow-kicker">From connect to scale</div>
+          <h2 class="build-flow-headline">Connect. Create. Optimize. Scale.</h2>
+          <p class="build-flow-sub">A single operating layer that moves from setup to live execution. Scroll to see each stage and what changes in the system.</p>
+          <div class="build-flow-meta">
             <span class="pill"><span class="dot"></span><span id="build-flow-stage-label">Build 01</span></span>
             <span class="pill">Meta OAuth • account controls</span>
           </div>
         </div>
         <div class="build-flow-right">
-          <div class="build-stage-rail reveal reveal-d2">
+          <div class="build-stage-rail">
             <div class="build-stage active" data-build-stage="0">
               <div class="build-step">Build 01</div>
               <h3 class="build-title">Connect your account.</h3>
@@ -619,13 +620,8 @@ export function homePage({ isLoggedIn = false } = {}) {
         if (fill) fill.style.width = (progress * 100).toFixed(2) + '%';
       }
 
-      // Give it enough scroll length to feel like a takeover.
-      // We do this via inline style so we don’t depend on global layout.
-      if (!section.style.minHeight) section.style.minHeight = Math.max(window.innerHeight * 2.1, 1400) + 'px';
-
       window.addEventListener('scroll', update, { passive: true });
       window.addEventListener('resize', function() {
-        section.style.minHeight = Math.max(window.innerHeight * 2.1, 1400) + 'px';
         update();
       });
       update();
