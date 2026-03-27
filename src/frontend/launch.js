@@ -105,6 +105,100 @@ export function launchPage() {
       background: rgba(16, 185, 129, 0.06);
     }
 
+    .meta-detail {
+      margin-top: 14px;
+      display: none;
+    }
+    .meta-detail.is-visible {
+      display: block;
+    }
+    .meta-detail .meta-user {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+    .meta-detail .meta-user strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+    .meta-detail .meta-user .disconnect-link {
+      margin-left: auto;
+      font-size: 12px;
+      color: var(--text-dim);
+      cursor: pointer;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+    .meta-detail .meta-user .disconnect-link:hover {
+      color: var(--red, #ef4444);
+    }
+    .account-select {
+      width: 100%;
+      padding: 12px 14px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--r-md);
+      font-family: var(--font-body);
+      font-size: 14px;
+      color: var(--text);
+      appearance: none;
+      cursor: pointer;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M3 4.5L6 7.5L9 4.5' stroke='%23888' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      padding-right: 36px;
+      transition: border-color 0.2s;
+    }
+    .account-select:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+    .account-select option {
+      background: var(--surface);
+      color: var(--text);
+    }
+    .account-loading {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--text-muted);
+      padding: 10px 0;
+    }
+    .account-loading .spin {
+      width: 14px;
+      height: 14px;
+      border: 2px solid var(--border);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .account-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 8px;
+      padding: 6px 10px;
+      border-radius: var(--r-sm);
+      font-size: 12px;
+      font-weight: 500;
+      font-family: var(--font-mono);
+    }
+    .account-badge.badge-active {
+      background: rgba(16, 185, 129, 0.08);
+      color: var(--green);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+    .account-badge.badge-inactive {
+      background: rgba(234, 179, 8, 0.08);
+      color: var(--orange, #f59e0b);
+      border: 1px solid rgba(234, 179, 8, 0.2);
+    }
+
     .review-panel {
       background: var(--bg);
       border: 1px solid var(--border);
@@ -232,7 +326,7 @@ export function launchPage() {
     <div class="container" style="max-width: 800px;">
       <div class="launch-hero reveal">
         <h1>Launch your swarm</h1>
-        <p>Connect ad accounts, share business details, and deploy your agent swarm in three steps.</p>
+        <p>Connect your Facebook account, pick an ad account, and deploy your agent swarm.</p>
       </div>
 
       <div id="launch-wizard">
@@ -242,23 +336,41 @@ export function launchPage() {
           <div id="step-ind-3" class="launch-progress-bar"></div>
         </div>
 
-        <!-- Step 1 -->
+        <!-- Step 1: Connect -->
         <div id="step-1" class="card launch-card reveal reveal-d2">
-          <div class="step-title">Connect ad accounts</div>
-          <div class="step-desc">Link Meta Ads and Google Ads. You can connect one or both.</div>
+          <div class="step-title">Connect your Facebook</div>
+          <div class="step-desc">Sign in with Facebook to grant AdClaw access to your ad accounts. We'll show you all available accounts to pick from.</div>
           <div class="connect-grid">
             <button type="button" id="btn-meta" class="connect-btn" onclick="connectMeta()">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.04c-5.5 0-9.96 4.46-9.96 9.96 0 4.41 2.87 8.14 6.84 9.45v-6.69H6.62v-2.76h2.26V9.92c0-2.23 1.33-3.47 3.37-3.47.97 0 1.99.18 1.99.18v2.19h-1.12c-1.11 0-1.45.69-1.45 1.39v1.67h2.47l-.39 2.76h-2.08v6.69c3.97-1.31 6.84-5.04 6.84-9.45 0-5.5-4.46-9.96-9.96-9.96z"/></svg>
-              Meta Ads
+              Connect with Facebook
             </button>
             <button type="button" id="btn-google" class="connect-btn" onclick="connectGoogle()">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
-              Google Ads
+              Google Ads (coming soon)
             </button>
           </div>
+
+          <!-- Ad account picker (shows after FB connect) -->
+          <div id="meta-detail" class="meta-detail">
+            <div class="meta-user">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 00-16 0"/></svg>
+              <span>Signed in as <strong id="meta-username"></strong></span>
+              <span class="disconnect-link" onclick="disconnectMeta()">Disconnect</span>
+            </div>
+            <div id="account-loading" class="account-loading" style="display:none;">
+              <div class="spin"></div>
+              Loading your ad accounts\u2026
+            </div>
+            <select id="account-select" class="account-select" onchange="onAccountSelect()" style="display:none;">
+              <option value="">Select an ad account</option>
+            </select>
+            <div id="account-badge-wrap"></div>
+          </div>
+
           <div class="step-actions">
             <span></span>
-            <button type="button" class="btn btn-primary" onclick="goToStep(2)">Continue</button>
+            <button type="button" id="btn-continue-1" class="btn btn-primary" onclick="goToStep(2)" disabled>Select an ad account to continue</button>
           </div>
         </div>
 
@@ -300,8 +412,8 @@ export function launchPage() {
             <div class="metric-row"><span class="metric-label">Page URL</span><span class="metric-value" id="rev-page" style="max-width:min(360px,55vw);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">&mdash;</span></div>
             <div class="metric-row"><span class="metric-label">Daily budget</span><span class="metric-value" id="rev-budget">&mdash;</span></div>
             <div class="metric-row"><span class="metric-label">Notes</span><span class="metric-value" id="rev-notes" style="white-space:pre-wrap;font-weight:500;">&mdash;</span></div>
-            <div class="metric-row"><span class="metric-label">Meta Ads</span><span id="rev-meta">&mdash;</span></div>
-            <div class="metric-row"><span class="metric-label">Google Ads</span><span id="rev-google">&mdash;</span></div>
+            <div class="metric-row"><span class="metric-label">Facebook</span><span id="rev-fb">&mdash;</span></div>
+            <div class="metric-row"><span class="metric-label">Ad account</span><span id="rev-account">&mdash;</span></div>
           </div>
 
           <div class="checklist-wrap review-panel">
@@ -310,7 +422,7 @@ export function launchPage() {
               <li><span class="check-ico"></span><span>Analyze your page and competitive landscape</span></li>
               <li><span class="check-ico"></span><span>Generate ad copy and creative directions</span></li>
               <li><span class="check-ico"></span><span>Run policy and compliance checks</span></li>
-              <li><span class="check-ico"></span><span>Launch and manage campaigns on connected platforms</span></li>
+              <li><span class="check-ico"></span><span>Launch and manage campaigns on your ad account</span></li>
               <li><span class="check-ico"></span><span>Optimize on a schedule and report performance</span></li>
             </ul>
           </div>
@@ -340,22 +452,30 @@ export function launchPage() {
 `,
     scripts: `
   <script>
-    var state = { metaConnected: false, metaName: '', googleConnected: false };
+    var state = {
+      metaConnected: false,
+      metaName: '',
+      adAccounts: [],
+      selectedAccountId: '',
+      selectedAccountName: '',
+      googleConnected: false,
+    };
 
-    (function initConnections() {
+    (function init() {
       var params = new URLSearchParams(window.location.search);
+
       if (params.get('meta') === 'success') {
         state.metaConnected = true;
         state.metaName = decodeURIComponent(params.get('name') || '');
-        setConnectButton('btn-meta', true, 'Meta Ads \u2014 ' + (state.metaName || 'Connected'), 'Meta Ads');
-        showToast('Meta Ads connected as ' + (state.metaName || 'your account'), 'success');
         window.history.replaceState({}, '', '/app/launch');
+        showMetaConnected();
+        loadAdAccounts();
       } else if (params.get('meta') === 'error') {
         var reason = params.get('reason') || 'unknown';
         if (reason === 'not_configured') {
-          showToast('Meta App not configured \u2014 add META_APP_ID & META_APP_SECRET to .env', 'error');
+          showToast('Meta App not configured \\u2014 add META_APP_ID & META_APP_SECRET in settings', 'error');
         } else {
-          showToast('Meta connection failed: ' + reason, 'error');
+          showToast('Facebook connection failed: ' + reason, 'error');
         }
         window.history.replaceState({}, '', '/app/launch');
       } else {
@@ -363,11 +483,172 @@ export function launchPage() {
           if (d.connected) {
             state.metaConnected = true;
             state.metaName = d.name || '';
-            setConnectButton('btn-meta', true, 'Meta Ads \u2014 ' + (d.name || 'Connected'), 'Meta Ads');
+            showMetaConnected();
+            if (d.adAccountId) {
+              state.selectedAccountId = d.adAccountId;
+              state.selectedAccountName = d.adAccountName || d.adAccountId;
+              showSelectedAccount(state.selectedAccountId, state.selectedAccountName, null);
+              enableContinue();
+            }
+            loadAdAccounts();
           }
         }).catch(function() {});
       }
     })();
+
+    function showMetaConnected() {
+      var btn = document.getElementById('btn-meta');
+      btn.classList.add('is-connected');
+      btn.innerHTML = '<span style="color:var(--green);">&#10003;</span> Facebook connected';
+      btn.onclick = null;
+
+      document.getElementById('meta-username').textContent = state.metaName || 'your account';
+      document.getElementById('meta-detail').classList.add('is-visible');
+    }
+
+    function resetMetaUI() {
+      var btn = document.getElementById('btn-meta');
+      btn.classList.remove('is-connected');
+      btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.04c-5.5 0-9.96 4.46-9.96 9.96 0 4.41 2.87 8.14 6.84 9.45v-6.69H6.62v-2.76h2.26V9.92c0-2.23 1.33-3.47 3.37-3.47.97 0 1.99.18 1.99.18v2.19h-1.12c-1.11 0-1.45.69-1.45 1.39v1.67h2.47l-.39 2.76h-2.08v6.69c3.97-1.31 6.84-5.04 6.84-9.45 0-5.5-4.46-9.96-9.96-9.96z"/></svg> Connect with Facebook';
+      btn.onclick = connectMeta;
+
+      document.getElementById('meta-detail').classList.remove('is-visible');
+      document.getElementById('account-select').style.display = 'none';
+      document.getElementById('account-loading').style.display = 'none';
+      document.getElementById('account-badge-wrap').innerHTML = '';
+      disableContinue();
+    }
+
+    async function loadAdAccounts() {
+      var loading = document.getElementById('account-loading');
+      var select = document.getElementById('account-select');
+      loading.style.display = 'flex';
+      select.style.display = 'none';
+
+      try {
+        var resp = await fetch('/api/meta/ad-accounts');
+        if (!resp.ok) {
+          var err = await resp.json();
+          if (resp.status === 401) {
+            showToast('Facebook session expired \\u2014 please reconnect', 'error');
+            resetMetaState();
+            resetMetaUI();
+            return;
+          }
+          throw new Error(err.error || 'Failed to load');
+        }
+
+        state.adAccounts = await resp.json();
+        loading.style.display = 'none';
+
+        if (state.adAccounts.length === 0) {
+          document.getElementById('account-badge-wrap').innerHTML =
+            '<div style="font-size:13px;color:var(--text-muted);padding:8px 0;">No ad accounts found on this Facebook profile. Make sure you have an active Meta Ads account.</div>';
+          return;
+        }
+
+        select.innerHTML = '<option value="">Select an ad account (' + state.adAccounts.length + ' found)</option>';
+        state.adAccounts.forEach(function(a) {
+          var opt = document.createElement('option');
+          opt.value = a.id;
+          var label = a.name + ' \\u2014 ' + a.currency + ' (' + a.status + ')';
+          opt.textContent = label;
+          if (a.statusCode !== 1) opt.style.opacity = '0.5';
+          if (state.selectedAccountId && state.selectedAccountId === a.id) {
+            opt.selected = true;
+          }
+          select.appendChild(opt);
+        });
+        select.style.display = 'block';
+
+        if (state.adAccounts.length === 1) {
+          select.value = state.adAccounts[0].id;
+          onAccountSelect();
+        } else if (state.selectedAccountId) {
+          showSelectedAccount(state.selectedAccountId, state.selectedAccountName, findAccount(state.selectedAccountId));
+        }
+      } catch (e) {
+        loading.style.display = 'none';
+        showToast('Could not load ad accounts: ' + e.message, 'error');
+      }
+    }
+
+    function findAccount(id) {
+      return state.adAccounts.find(function(a) { return a.id === id; });
+    }
+
+    function onAccountSelect() {
+      var select = document.getElementById('account-select');
+      var id = select.value;
+      if (!id) {
+        state.selectedAccountId = '';
+        state.selectedAccountName = '';
+        document.getElementById('account-badge-wrap').innerHTML = '';
+        disableContinue();
+        return;
+      }
+
+      var account = findAccount(id);
+      state.selectedAccountId = id;
+      state.selectedAccountName = account ? account.name : id;
+
+      fetch('/api/meta/select-account', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ adAccountId: id, adAccountName: state.selectedAccountName }),
+      });
+
+      showSelectedAccount(id, state.selectedAccountName, account);
+      enableContinue();
+    }
+
+    function showSelectedAccount(id, name, account) {
+      var wrap = document.getElementById('account-badge-wrap');
+      var isActive = !account || account.statusCode === 1;
+      wrap.innerHTML =
+        '<div class="account-badge ' + (isActive ? 'badge-active' : 'badge-inactive') + '">' +
+        '<span style="width:6px;height:6px;border-radius:50%;background:currentColor;"></span> ' +
+        escapeHtml(name) + ' &middot; act_' + escapeHtml(id) +
+        (account ? ' &middot; ' + account.currency : '') +
+        '</div>';
+    }
+
+    function enableContinue() {
+      var btn = document.getElementById('btn-continue-1');
+      btn.disabled = false;
+      btn.textContent = 'Continue';
+    }
+
+    function disableContinue() {
+      var btn = document.getElementById('btn-continue-1');
+      btn.disabled = true;
+      btn.textContent = 'Select an ad account to continue';
+    }
+
+    function connectMeta() {
+      window.location.href = '/auth/meta';
+    }
+
+    function disconnectMeta() {
+      if (!confirm('Disconnect your Facebook account?')) return;
+      fetch('/api/meta/disconnect', { method: 'POST' }).then(function() {
+        resetMetaState();
+        resetMetaUI();
+        showToast('Facebook disconnected', 'success');
+      });
+    }
+
+    function resetMetaState() {
+      state.metaConnected = false;
+      state.metaName = '';
+      state.adAccounts = [];
+      state.selectedAccountId = '';
+      state.selectedAccountName = '';
+    }
+
+    function connectGoogle() {
+      showToast('Google Ads integration coming soon', 'info');
+    }
 
     function goToStep(n) {
       var wizard = document.getElementById('launch-wizard');
@@ -377,9 +658,7 @@ export function launchPage() {
         var stepEl = document.getElementById('step-' + i);
         if (stepEl) stepEl.style.display = i === n ? 'block' : 'none';
         var bar = document.getElementById('step-ind-' + i);
-        if (bar) {
-          bar.className = 'launch-progress-bar' + (i === n ? ' is-active' : '');
-        }
+        if (bar) bar.className = 'launch-progress-bar' + (i === n ? ' is-active' : '');
       }
 
       var doneEl = document.getElementById('step-done');
@@ -387,63 +666,27 @@ export function launchPage() {
       if (n === 3) populateReview();
     }
 
-    function setConnectButton(id, connected, labelConnected, labelDisconnected) {
-      var btn = document.getElementById(id);
-      if (!btn) return;
-      btn.classList.toggle('is-connected', connected);
-      var icon = id === 'btn-meta' ? '&#xf09a;' : '&#127760;';
-      btn.innerHTML = connected
-        ? '<span style="color:var(--green);">&#10003;</span> ' + escapeHtml(labelConnected)
-        : '<span style="opacity:0.85;">' + icon + '</span> ' + escapeHtml(labelDisconnected);
-    }
-
-    function connectMeta() {
-      if (state.metaConnected) {
-        if (!confirm('Disconnect Meta Ads?')) return;
-        fetch('/api/meta/disconnect', { method: 'POST' }).then(function() {
-          state.metaConnected = false;
-          state.metaName = '';
-          setConnectButton('btn-meta', false, '', 'Meta Ads');
-          showToast('Meta Ads disconnected', 'success');
-        });
-        return;
-      }
-      window.location.href = '/auth/meta';
-    }
-
-    function connectGoogle() {
-      state.googleConnected = !state.googleConnected;
-      setConnectButton('btn-google', state.googleConnected, 'Google Ads connected', 'Google Ads');
-      showToast(state.googleConnected ? 'Google Ads connected (demo)' : 'Google Ads disconnected', 'success');
-    }
-
     function populateReview() {
-      var client = document.getElementById('inp-client');
-      var page = document.getElementById('inp-page');
-      var budget = document.getElementById('inp-budget');
-      var notes = document.getElementById('inp-notes');
-
-      document.getElementById('rev-client').textContent = (client && client.value.trim()) || 'Not set';
-      document.getElementById('rev-page').textContent = (page && page.value.trim()) || 'Not set';
-      var b = budget && budget.value ? budget.value : '50';
+      document.getElementById('rev-client').textContent = (document.getElementById('inp-client')?.value?.trim()) || 'Not set';
+      document.getElementById('rev-page').textContent = (document.getElementById('inp-page')?.value?.trim()) || 'Not set';
+      var b = document.getElementById('inp-budget')?.value || '50';
       document.getElementById('rev-budget').textContent = '$' + b + '/day';
-      document.getElementById('rev-notes').textContent = (notes && notes.value.trim()) || '\u2014';
+      document.getElementById('rev-notes').textContent = (document.getElementById('inp-notes')?.value?.trim()) || '\\u2014';
 
-      var metaHtml = state.metaConnected
-        ? '<span class="badge badge-green"><span class="dot dot-green"></span>' + escapeHtml(state.metaName || 'Connected') + '</span>'
+      document.getElementById('rev-fb').innerHTML = state.metaConnected
+        ? '<span class="badge badge-green"><span class="dot dot-green"></span>' + escapeHtml(state.metaName) + '</span>'
         : '<span class="badge badge-orange"><span class="dot dot-orange"></span>Not connected</span>';
-      var googleHtml = state.googleConnected
-        ? '<span class="badge badge-green"><span class="dot dot-green"></span>Connected</span>'
-        : '<span class="badge badge-orange"><span class="dot dot-orange"></span>Not connected</span>';
-      document.getElementById('rev-meta').innerHTML = metaHtml;
-      document.getElementById('rev-google').innerHTML = googleHtml;
+
+      document.getElementById('rev-account').innerHTML = state.selectedAccountId
+        ? '<span class="badge badge-green"><span class="dot dot-green"></span>' + escapeHtml(state.selectedAccountName) + ' (act_' + escapeHtml(state.selectedAccountId) + ')</span>'
+        : '<span class="badge badge-orange"><span class="dot dot-orange"></span>None selected</span>';
     }
 
     async function launchSwarm() {
       var btn = document.getElementById('btn-launch');
       if (btn) {
         btn.disabled = true;
-        btn.innerHTML = '<span class="spinner"></span> Launching\u2026';
+        btn.innerHTML = '<span class="spinner"></span> Launching\\u2026';
       }
 
       var clientId = (document.getElementById('inp-client')?.value?.trim()) || 'demo-client';
@@ -456,7 +699,8 @@ export function launchPage() {
             clientId: clientId,
             businessPageUrl: pageUrl,
             metaAccessToken: state.metaConnected ? '__cookie__' : null,
-            googleAccessToken: state.googleConnected ? 'demo-token' : null
+            metaAdAccountId: state.selectedAccountId || null,
+            googleAccessToken: null,
           }
         });
 
@@ -468,6 +712,7 @@ export function launchPage() {
           out.innerHTML =
             '<div><strong>Swarm ID</strong> &nbsp; ' + escapeHtml(String(result.swarmId || '')) + '</div>' +
             (result.status ? '<div style="margin-top:8px;"><strong>Status</strong> &nbsp; <span style="color:var(--green);">' + escapeHtml(String(result.status)) + '</span></div>' : '') +
+            (state.selectedAccountName ? '<div style="margin-top:8px;"><strong>Ad account</strong> &nbsp; ' + escapeHtml(state.selectedAccountName) + '</div>' : '') +
             (result.message ? '<div style="margin-top:8px;">' + escapeHtml(String(result.message)) + '</div>' : '');
         }
         showToast('Swarm launched successfully', 'success');

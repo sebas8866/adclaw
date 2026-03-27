@@ -58,7 +58,7 @@ export class MetaAdsClient {
   async getAdAccounts() {
     const res = await axios.get(`${META_GRAPH_URL}/me/adaccounts`, {
       headers: this.headers,
-      params: { fields: 'id,name,account_status,currency,timezone_name' },
+      params: { fields: 'id,name,account_status,currency,timezone_name', limit: 100 },
     });
     return res.data.data;
   }
@@ -140,6 +140,14 @@ function getRedirectUri(req) {
   return `${proto}://${host}/auth/meta/callback`;
 }
 
+const COOKIE_OPTS = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === 'production' || !!process.env.VERCEL,
+  sameSite: 'lax',
+  maxAge: 60 * 24 * 60 * 60 * 1000,
+  path: '/',
+};
+
 export function metaAuthRoutes(app) {
   app.get('/auth/meta', (req, res) => {
     const appId = process.env.META_APP_ID;
@@ -178,18 +186,9 @@ export function metaAuthRoutes(app) {
 
       const me = await MetaAdsClient.getMe(accessToken);
 
-      res.cookie('meta_access_token', accessToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production' || !!process.env.VERCEL,
-        sameSite: 'lax',
-        maxAge: 60 * 24 * 60 * 60 * 1000,
-        path: '/',
-      });
-
-      res.cookie('meta_user_name', me.name || 'Connected', {
-        maxAge: 60 * 24 * 60 * 60 * 1000,
-        path: '/',
-      });
+      res.cookie('meta_access_token', accessToken, COOKIE_OPTS);
+      res.cookie('meta_user_name', me.name || 'Connected', { maxAge: COOKIE_OPTS.maxAge, path: '/' });
+      res.cookie('meta_user_id', me.id, { maxAge: COOKIE_OPTS.maxAge, path: '/' });
 
       logger.info(`Meta OAuth complete for ${me.name} (${me.id})`);
       res.redirect('/app/launch?meta=success&name=' + encodeURIComponent(me.name || ''));
@@ -202,16 +201,74 @@ export function metaAuthRoutes(app) {
   app.get('/api/meta/status', (req, res) => {
     const token = req.cookies?.meta_access_token;
     const name = req.cookies?.meta_user_name;
+    const adAccountId = req.cookies?.meta_ad_account_id;
+    const adAccountName = req.cookies?.meta_ad_account_name;
     if (token) {
-      res.json({ connected: true, name: name || 'Connected' });
+      res.json({
+        connected: true,
+        name: name || 'Connected',
+        adAccountId: adAccountId || null,
+        adAccountName: adAccountName || null,
+      });
     } else {
       res.json({ connected: false });
     }
   });
 
+  app.get('/api/meta/ad-accounts', async (req, res) => {
+    const token = req.cookies?.meta_access_token;
+    if (!token) {
+      return res.status(401).json({ error: 'Not connected to Meta' });
+    }
+
+    try {
+      const client = new MetaAdsClient({ accessToken: token, adAccountId: null });
+      const accounts = await client.getAdAccounts();
+
+      const STATUS_MAP = { 1: 'Active', 2: 'Disabled', 3: 'Unsettled', 7: 'Pending review', 9: 'In grace period', 100: 'Pending closure', 101: 'Closed', 201: 'Any active', 202: 'Any closed' };
+
+      res.json(accounts.map(a => ({
+        id: a.id.replace('act_', ''),
+        rawId: a.id,
+        name: a.name || a.id,
+        status: STATUS_MAP[a.account_status] || 'Unknown',
+        statusCode: a.account_status,
+        currency: a.currency,
+        timezone: a.timezone_name,
+      })));
+    } catch (err) {
+      logger.error('Failed to fetch ad accounts: ' + err.message);
+      if (err.response?.status === 190) {
+        res.clearCookie('meta_access_token');
+        res.clearCookie('meta_user_name');
+        return res.status(401).json({ error: 'Token expired — please reconnect' });
+      }
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.post('/api/meta/select-account', (req, res) => {
+    const token = req.cookies?.meta_access_token;
+    if (!token) {
+      return res.status(401).json({ error: 'Not connected to Meta' });
+    }
+
+    const { adAccountId, adAccountName } = req.body;
+    if (!adAccountId) {
+      return res.status(400).json({ error: 'adAccountId is required' });
+    }
+
+    res.cookie('meta_ad_account_id', adAccountId, { maxAge: COOKIE_OPTS.maxAge, path: '/' });
+    res.cookie('meta_ad_account_name', adAccountName || adAccountId, { maxAge: COOKIE_OPTS.maxAge, path: '/' });
+    res.json({ selected: true, adAccountId, adAccountName });
+  });
+
   app.post('/api/meta/disconnect', (req, res) => {
     res.clearCookie('meta_access_token');
     res.clearCookie('meta_user_name');
+    res.clearCookie('meta_user_id');
+    res.clearCookie('meta_ad_account_id');
+    res.clearCookie('meta_ad_account_name');
     res.json({ disconnected: true });
   });
 }
