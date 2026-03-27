@@ -84,13 +84,15 @@ export function homePage({ isLoggedIn = false } = {}) {
       overflow: hidden;
       background: rgba(7, 11, 22, 0.92);
       width: 100%;
-      max-width: 520px;
+      max-width: 640px;
       aspect-ratio: 16 / 10;
       justify-self: end;
       display: flex;
       align-items: center;
       justify-content: center;
       box-shadow: 0 20px 50px rgba(6, 10, 20, 0.4);
+      cursor: pointer;
+      user-select: none;
     }
     .hero-video video {
       width: 100%;
@@ -98,6 +100,7 @@ export function homePage({ isLoggedIn = false } = {}) {
       object-fit: contain;
       display: block;
       background: rgba(3, 6, 14, 0.92);
+      cursor: pointer;
     }
     .logo-strip {
       margin-top: 24px;
@@ -280,8 +283,8 @@ export function homePage({ isLoggedIn = false } = {}) {
             </div>
           </div>
         </div>
-        <div class="hero-video reveal reveal-d2">
-          <video autoplay muted loop playsinline preload="metadata">
+        <div class="hero-video reveal reveal-d2" id="hero-video-wrap" title="Click to pause or play">
+          <video id="hero-video" autoplay muted loop playsinline preload="metadata">
             <source src="/media/AdClawHomepage.mp4" type="video/mp4">
           </video>
         </div>
@@ -447,6 +450,16 @@ export function homePage({ isLoggedIn = false } = {}) {
         var hrs = Math.floor(mins / 60);
         document.getElementById('hero-uptime').textContent = hrs > 0 ? hrs + 'h' : mins + 'm';
       } catch(e) {}
+    })();
+
+    (function initHeroVideoToggle() {
+      var wrap = document.getElementById('hero-video-wrap');
+      var vid = document.getElementById('hero-video');
+      if (!wrap || !vid) return;
+      wrap.addEventListener('click', function() {
+        if (vid.paused) vid.play();
+        else vid.pause();
+      });
     })();
 
     (function initMouseParticles() {
