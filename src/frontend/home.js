@@ -174,32 +174,15 @@ export function homePage({ isLoggedIn = false } = {}) {
       max-width: 520px;
       margin-left: auto;
     }
-    .build-stage-card {
-      border: 1px solid rgba(132, 173, 255, 0.3);
-      border-radius: 26px;
-      background: linear-gradient(180deg, rgba(16, 26, 48, 0.92), rgba(10, 16, 30, 0.92));
-      padding: 22px 20px;
-      position: relative;
-      overflow: hidden;
-      min-height: 280px;
-    }
-    .build-stage-card::before {
-      content: '';
-      position: absolute;
-      inset: -120px -140px auto auto;
-      width: 380px;
-      height: 380px;
-      background: radial-gradient(circle at 30% 30%, rgba(121, 177, 255, 0.26), transparent 62%);
-      transform: rotate(18deg);
-      pointer-events: none;
+    .build-stage-rail {
+      padding-left: 18px;
+      border-left: 1px solid rgba(134, 173, 255, 0.18);
     }
     .build-stage {
       display: none;
       opacity: 0;
       transform: translateY(10px);
       transition: opacity 0.28s ease, transform 0.28s ease;
-      position: relative;
-      z-index: 1;
     }
     .build-stage.active {
       display: block;
@@ -216,29 +199,27 @@ export function homePage({ isLoggedIn = false } = {}) {
     .build-title {
       margin-top: 12px;
       font-family: var(--font-display);
-      font-size: 28px;
-      line-height: 1.08;
+      font-size: 34px;
+      line-height: 1.02;
       letter-spacing: -0.03em;
-      font-weight: 850;
+      font-weight: 900;
       color: #eef5ff;
     }
     .build-copy {
       margin-top: 10px;
-      font-size: 14px;
+      font-size: 15px;
       color: var(--text-secondary);
       line-height: 1.7;
-      max-width: 440px;
+      max-width: 520px;
     }
     .build-progress {
-      margin-top: 16px;
+      margin-top: 22px;
       width: 100%;
       height: 6px;
       border-radius: 999px;
       background: rgba(120, 155, 219, 0.26);
       overflow: hidden;
       border: 1px solid rgba(134, 171, 255, 0.2);
-      position: relative;
-      z-index: 1;
     }
     .build-progress-fill {
       width: 0%;
@@ -411,7 +392,7 @@ export function homePage({ isLoggedIn = false } = {}) {
           </div>
         </div>
         <div class="build-flow-right">
-          <div class="build-stage-card reveal reveal-d2">
+          <div class="build-stage-rail reveal reveal-d2">
             <div class="build-stage active" data-build-stage="0">
               <div class="build-step">Build 01</div>
               <h3 class="build-title">Connect your account.</h3>
