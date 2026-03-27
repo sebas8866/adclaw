@@ -2,7 +2,7 @@ export const config = {
   // Intelligence tiers — escalation thresholds
   intelligence: {
     local: {
-      intervalMs: 15 * 60 * 1000,       // 15 minutes
+      intervalMs: 60 * 60 * 1000,       // 1 hour
       model: process.env.OLLAMA_MODEL || 'llama3.2:3b',
       baseUrl: process.env.OLLAMA_BASE_URL || 'http://localhost:11434',
     },

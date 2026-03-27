@@ -352,7 +352,7 @@ export function appDashboardPage() {
           <p class="text-small" style="margin-bottom:20px;">Routing cadence by model tier.</p>
           <div class="metric-row">
             <span class="metric-label"><span class="dot dot-green"></span> Tier 1 — Ollama</span>
-            <span class="metric-value" id="t1">every 15 min</span>
+            <span class="metric-value" id="t1">hourly</span>
           </div>
           <div class="metric-row">
             <span class="metric-label"><span class="dot" style="background:var(--blue);"></span> Tier 2 — Kimi</span>
