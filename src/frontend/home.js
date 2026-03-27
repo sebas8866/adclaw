@@ -102,18 +102,109 @@ export function homePage({ isLoggedIn = false } = {}) {
       border-bottom: 1px solid rgba(130, 171, 255, 0.18);
     }
 
-    .build-flow-stack {
-      margin-top: 40px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      max-width: 860px;
+    .build-flow {
+      position: relative;
+      padding: 112px 0;
     }
-    .build-flow-item {
+    .build-flow-inner {
+      position: sticky;
+      top: 92px;
+      min-height: calc(100vh - 140px);
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 28px;
+      align-items: center;
+    }
+    .build-flow-left { max-width: 780px; }
+    .build-flow-kicker {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+    }
+    .build-flow-headline {
+      margin-top: 18px;
+      font-family: var(--font-display);
+      font-size: clamp(44px, 5.8vw, 88px);
+      line-height: 0.96;
+      letter-spacing: -0.06em;
+      font-weight: 900;
+    }
+    .build-flow-sub {
+      margin-top: 18px;
+      max-width: 640px;
+      color: var(--text-secondary);
+      font-size: 16px;
+      line-height: 1.7;
+    }
+    .build-flow-meta {
+      margin-top: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      max-width: 520px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(134, 173, 255, 0.16);
+    }
+    .build-flow-meta .pill {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #cfe4ff;
+      border: 1px solid rgba(133, 178, 255, 0.28);
+      background: rgba(108, 173, 255, 0.08);
+      padding: 10px 12px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+    .build-flow-meta .pill .dot {
+      width: 7px; height: 7px; border-radius: 999px;
+      background: #78b6ff;
+      box-shadow: 0 0 0 4px rgba(120, 182, 255, 0.14);
+    }
+
+    .build-flow-right {
+      width: 100%;
+      max-width: 520px;
+      margin-left: auto;
+    }
+    .build-stage-card {
       border: 1px solid rgba(132, 173, 255, 0.3);
-      border-radius: 22px;
-      background: linear-gradient(180deg, rgba(16, 26, 48, 0.94), rgba(10, 16, 30, 0.94));
-      padding: 24px 22px;
+      border-radius: 26px;
+      background: linear-gradient(180deg, rgba(16, 26, 48, 0.92), rgba(10, 16, 30, 0.92));
+      padding: 22px 20px;
+      position: relative;
+      overflow: hidden;
+      min-height: 280px;
+    }
+    .build-stage-card::before {
+      content: '';
+      position: absolute;
+      inset: -120px -140px auto auto;
+      width: 380px;
+      height: 380px;
+      background: radial-gradient(circle at 30% 30%, rgba(121, 177, 255, 0.26), transparent 62%);
+      transform: rotate(18deg);
+      pointer-events: none;
+    }
+    .build-stage {
+      display: none;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.28s ease, transform 0.28s ease;
+      position: relative;
+      z-index: 1;
+    }
+    .build-stage.active {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
     }
     .build-step {
       font-family: var(--font-mono);
@@ -123,19 +214,49 @@ export function homePage({ isLoggedIn = false } = {}) {
       color: #b7d5ff;
     }
     .build-title {
-      margin-top: 10px;
+      margin-top: 12px;
       font-family: var(--font-display);
-      font-size: clamp(26px, 3.4vw, 48px);
-      line-height: 1.06;
-      letter-spacing: -0.04em;
-      font-weight: 800;
+      font-size: 28px;
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+      font-weight: 850;
+      color: #eef5ff;
     }
     .build-copy {
       margin-top: 10px;
-      font-size: 15px;
+      font-size: 14px;
       color: var(--text-secondary);
-      max-width: 620px;
-      line-height: 1.65;
+      line-height: 1.7;
+      max-width: 440px;
+    }
+    .build-progress {
+      margin-top: 16px;
+      width: 100%;
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(120, 155, 219, 0.26);
+      overflow: hidden;
+      border: 1px solid rgba(134, 171, 255, 0.2);
+      position: relative;
+      z-index: 1;
+    }
+    .build-progress-fill {
+      width: 0%;
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #9fd0ff, #6daeff);
+      transition: width 0.12s linear;
+    }
+    .build-markers {
+      margin-top: 10px;
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-dim);
     }
     .process {
       margin-top: 42px;
@@ -222,6 +343,15 @@ export function homePage({ isLoggedIn = false } = {}) {
     @media (max-width: 980px) {
       .hero-wrap { grid-template-columns: 1fr; }
       .hero-metrics { grid-template-columns: 1fr; }
+      .build-flow-inner {
+        position: relative;
+        top: auto;
+        min-height: auto;
+        grid-template-columns: 1fr;
+        align-items: start;
+      }
+      .build-flow-right { margin-left: 0; max-width: 620px; }
+      .build-flow-headline { font-size: clamp(38px, 9vw, 56px); }
       .process { grid-template-columns: 1fr; }
     }
   </style>
@@ -268,31 +398,44 @@ export function homePage({ isLoggedIn = false } = {}) {
     </div>
   </section>
 
-  <section class="section band" id="build-flow">
+  <section class="band build-flow" id="build-flow" data-build-flow>
     <div class="container">
-      <p class="label-tag reveal">From connect to scale</p>
-      <h2 class="text-section reveal reveal-d1" style="margin-top:14px;max-width:700px;">Four moves. One operating layer.</h2>
-      <div class="build-flow-stack">
-        <article class="build-flow-item reveal reveal-d2">
-          <div class="build-step">Build 01</div>
-          <h3 class="build-title">Connect your account.</h3>
-          <p class="build-copy">Secure OAuth connection to Facebook and select the ad account you want us to run.</p>
-        </article>
-        <article class="build-flow-item reveal reveal-d3">
-          <div class="build-step">Build 02</div>
-          <h3 class="build-title">Generate strategy + creative.</h3>
-          <p class="build-copy">The system drafts campaign direction, hooks, and creative variants based on your setup.</p>
-        </article>
-        <article class="build-flow-item reveal reveal-d4">
-          <div class="build-step">Build 03</div>
-          <h3 class="build-title">Launch and optimize live.</h3>
-          <p class="build-copy">Campaigns are monitored and optimized continuously as performance data updates.</p>
-        </article>
-        <article class="build-flow-item reveal reveal-d5">
-          <div class="build-step">Build 04</div>
-          <h3 class="build-title">Scale winners automatically.</h3>
-          <p class="build-copy">Top performers get more budget while weak ad sets are reduced or paused.</p>
-        </article>
+      <div class="build-flow-inner">
+        <div class="build-flow-left">
+          <div class="build-flow-kicker reveal">From connect to scale</div>
+          <h2 class="build-flow-headline reveal reveal-d1">Connect. Create. Optimize. Scale.</h2>
+          <p class="build-flow-sub reveal reveal-d2">A single operating layer that moves from setup to live execution. Scroll to see each stage and what changes in the system.</p>
+          <div class="build-flow-meta reveal reveal-d3">
+            <span class="pill"><span class="dot"></span><span id="build-flow-stage-label">Build 01</span></span>
+            <span class="pill">Meta OAuth • account controls</span>
+          </div>
+        </div>
+        <div class="build-flow-right">
+          <div class="build-stage-card reveal reveal-d2">
+            <div class="build-stage active" data-build-stage="0">
+              <div class="build-step">Build 01</div>
+              <h3 class="build-title">Connect your account.</h3>
+              <p class="build-copy">Secure OAuth connection to Facebook and select the ad account you want us to run.</p>
+            </div>
+            <div class="build-stage" data-build-stage="1">
+              <div class="build-step">Build 02</div>
+              <h3 class="build-title">Create strategy + creative.</h3>
+              <p class="build-copy">The system drafts campaign direction, hooks, and creative variants based on your setup.</p>
+            </div>
+            <div class="build-stage" data-build-stage="2">
+              <div class="build-step">Build 03</div>
+              <h3 class="build-title">Optimize continuously.</h3>
+              <p class="build-copy">Campaigns are monitored and tuned as performance data updates across audiences, ads, and spend.</p>
+            </div>
+            <div class="build-stage" data-build-stage="3">
+              <div class="build-step">Build 04</div>
+              <h3 class="build-title">Scale winners safely.</h3>
+              <p class="build-copy">Top performers get more budget while weak ad sets are reduced or paused—without blowing up account health.</p>
+            </div>
+            <div class="build-progress"><div id="build-progress-fill" class="build-progress-fill"></div></div>
+            <div class="build-markers"><span>Connect</span><span>Create</span><span>Optimize</span><span>Scale</span></div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -467,6 +610,44 @@ export function homePage({ isLoggedIn = false } = {}) {
         requestAnimationFrame(draw);
       }
       draw();
+    })();
+
+    (function initBuildFlowScroll() {
+      var section = document.querySelector('[data-build-flow]');
+      var stages = Array.prototype.slice.call(document.querySelectorAll('[data-build-stage]'));
+      var fill = document.getElementById('build-progress-fill');
+      var label = document.getElementById('build-flow-stage-label');
+      if (!section || !stages.length) return;
+
+      function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
+
+      function setActive(idx) {
+        stages.forEach(function(s, i) {
+          if (i === idx) s.classList.add('active');
+          else s.classList.remove('active');
+        });
+        if (label) label.textContent = 'Build 0' + (idx + 1);
+      }
+
+      function update() {
+        var rect = section.getBoundingClientRect();
+        var total = Math.max(1, section.offsetHeight - window.innerHeight);
+        var progress = clamp((-rect.top) / total, 0, 1);
+        var idx = Math.min(stages.length - 1, Math.floor(progress * stages.length));
+        setActive(idx);
+        if (fill) fill.style.width = (progress * 100).toFixed(2) + '%';
+      }
+
+      // Give it enough scroll length to feel like a takeover.
+      // We do this via inline style so we don’t depend on global layout.
+      if (!section.style.minHeight) section.style.minHeight = Math.max(window.innerHeight * 2.1, 1400) + 'px';
+
+      window.addEventListener('scroll', update, { passive: true });
+      window.addEventListener('resize', function() {
+        section.style.minHeight = Math.max(window.innerHeight * 2.1, 1400) + 'px';
+        update();
+      });
+      update();
     })();
 
   </script>
