@@ -11,14 +11,21 @@ export class SwarmManager {
     this.swarms = new Map();
   }
 
-  async launch({ clientId, businessPageUrl, metaAccessToken, googleAccessToken }) {
+  async launch({ clientId, businessPageUrl, metaAccessToken, metaAdAccountId, googleAccessToken, creativeBrief }) {
     if (this.swarms.size >= config.resources.maxConcurrentSwarms) {
       throw new Error(
         `Max concurrent swarms reached (${config.resources.maxConcurrentSwarms}). Stop a swarm first.`
       );
     }
 
-    const swarm = new Swarm({ clientId, businessPageUrl, metaAccessToken, googleAccessToken });
+    const swarm = new Swarm({
+      clientId,
+      businessPageUrl,
+      metaAccessToken,
+      metaAdAccountId,
+      googleAccessToken,
+      creativeBrief,
+    });
     this.swarms.set(swarm.id, swarm);
 
     swarm.on('stopped', () => {

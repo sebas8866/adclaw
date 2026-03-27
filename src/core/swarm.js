@@ -15,12 +15,13 @@ import { CoachAgent } from '../agents/coach.js';
  * Each swarm runs its own task queue and agent instances.
  */
 export class Swarm extends EventEmitter {
-  constructor({ clientId, businessPageUrl, metaAccessToken, googleAccessToken }) {
+  constructor({ clientId, businessPageUrl, metaAccessToken, metaAdAccountId, googleAccessToken, creativeBrief }) {
     super();
     this.id = uuid();
     this.clientId = clientId;
     this.businessPageUrl = businessPageUrl;
     this.metaAccessToken = metaAccessToken;
+    this.metaAdAccountId = metaAdAccountId || null;
     this.googleAccessToken = googleAccessToken;
     this.status = 'initializing';
     this.createdAt = new Date();
@@ -48,6 +49,7 @@ export class Swarm extends EventEmitter {
       creatives: [],
       complianceFlags: [],
       dailyReport: null,
+      creativeBrief: creativeBrief || {},
     };
 
     this._intervals = [];

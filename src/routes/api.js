@@ -47,7 +47,7 @@ export function createApiRouter(swarmManager) {
    */
   router.post('/swarms/launch', async (req, res) => {
     try {
-      const { clientId, businessPageUrl, metaAccessToken, metaAdAccountId, googleAccessToken } = req.body;
+      const { clientId, businessPageUrl, metaAccessToken, metaAdAccountId, googleAccessToken, creativeBrief } = req.body;
 
       if (!clientId || !businessPageUrl) {
         return res.status(400).json({ error: 'clientId and businessPageUrl are required' });
@@ -65,6 +65,7 @@ export function createApiRouter(swarmManager) {
         metaAccessToken: resolvedMetaToken || null,
         metaAdAccountId: resolvedAdAccount,
         googleAccessToken,
+        creativeBrief: creativeBrief || null,
       });
 
       res.status(201).json({

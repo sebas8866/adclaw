@@ -379,7 +379,7 @@ export function launchPage() {
         <!-- Step 2 -->
         <div id="step-2" class="card launch-card" style="display:none;">
           <div class="step-title">Business details</div>
-          <div class="step-desc">We use this to research your niche and configure campaigns.</div>
+          <div class="step-desc">We use this to research your niche, generate creatives, and configure campaigns.</div>
           <div class="form-group">
             <label for="inp-client">Client name</label>
             <input type="text" id="inp-client" class="form-input" placeholder="e.g. Northwind Coffee" autocomplete="organization">
@@ -391,6 +391,39 @@ export function launchPage() {
           <div class="form-group">
             <label for="inp-budget">Daily budget (USD)</label>
             <input type="number" id="inp-budget" class="form-input" placeholder="50" value="50" min="1" step="1">
+          </div>
+          <div class="form-group">
+            <label for="inp-product">Product or service</label>
+            <input type="text" id="inp-product" class="form-input" placeholder="e.g. Premium dog supplements">
+          </div>
+          <div class="form-group">
+            <label for="inp-offer">Offer</label>
+            <input type="text" id="inp-offer" class="form-input" placeholder="e.g. 20% off first order + free shipping">
+          </div>
+          <div class="form-group">
+            <label for="inp-audience">Target audience</label>
+            <input type="text" id="inp-audience" class="form-input" placeholder="e.g. Dog owners in US, ages 25-55">
+          </div>
+          <div class="form-group">
+            <label for="inp-pain">Main pain point</label>
+            <input type="text" id="inp-pain" class="form-input" placeholder="e.g. Dog joint pain and low mobility">
+          </div>
+          <div class="form-group">
+            <label for="inp-usp">Unique value proposition</label>
+            <input type="text" id="inp-usp" class="form-input" placeholder="e.g. Vet-formulated with fast absorption">
+          </div>
+          <div class="form-group">
+            <label for="inp-goal">Primary goal</label>
+            <select id="inp-goal" class="form-input">
+              <option value="purchase">Purchases</option>
+              <option value="leads">Leads</option>
+              <option value="bookings">Bookings</option>
+              <option value="traffic">Traffic</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="inp-tone">Creative tone</label>
+            <input type="text" id="inp-tone" class="form-input" placeholder="e.g. Premium, clean, trustworthy">
           </div>
           <div class="form-group">
             <label for="inp-notes">Notes</label>
@@ -413,6 +446,13 @@ export function launchPage() {
             <div class="metric-row"><span class="metric-label">Client</span><span class="metric-value" id="rev-client">&mdash;</span></div>
             <div class="metric-row"><span class="metric-label">Page URL</span><span class="metric-value" id="rev-page" style="max-width:min(360px,55vw);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">&mdash;</span></div>
             <div class="metric-row"><span class="metric-label">Daily budget</span><span class="metric-value" id="rev-budget">&mdash;</span></div>
+            <div class="metric-row"><span class="metric-label">Product</span><span class="metric-value" id="rev-product">&mdash;</span></div>
+            <div class="metric-row"><span class="metric-label">Offer</span><span class="metric-value" id="rev-offer">&mdash;</span></div>
+            <div class="metric-row"><span class="metric-label">Audience</span><span class="metric-value" id="rev-audience">&mdash;</span></div>
+            <div class="metric-row"><span class="metric-label">Pain point</span><span class="metric-value" id="rev-pain">&mdash;</span></div>
+            <div class="metric-row"><span class="metric-label">USP</span><span class="metric-value" id="rev-usp">&mdash;</span></div>
+            <div class="metric-row"><span class="metric-label">Goal</span><span class="metric-value" id="rev-goal">&mdash;</span></div>
+            <div class="metric-row"><span class="metric-label">Tone</span><span class="metric-value" id="rev-tone">&mdash;</span></div>
             <div class="metric-row"><span class="metric-label">Notes</span><span class="metric-value" id="rev-notes" style="white-space:pre-wrap;font-weight:500;">&mdash;</span></div>
             <div class="metric-row"><span class="metric-label">Facebook</span><span id="rev-fb">&mdash;</span></div>
             <div class="metric-row"><span class="metric-label">Ad account</span><span id="rev-account">&mdash;</span></div>
@@ -668,11 +708,32 @@ export function launchPage() {
       if (n === 3) populateReview();
     }
 
+    function getCreativeBrief() {
+      return {
+        productName: (document.getElementById('inp-product')?.value?.trim()) || '',
+        offer: (document.getElementById('inp-offer')?.value?.trim()) || '',
+        audience: (document.getElementById('inp-audience')?.value?.trim()) || '',
+        painPoint: (document.getElementById('inp-pain')?.value?.trim()) || '',
+        usp: (document.getElementById('inp-usp')?.value?.trim()) || '',
+        goal: (document.getElementById('inp-goal')?.value?.trim()) || 'purchase',
+        tone: (document.getElementById('inp-tone')?.value?.trim()) || '',
+        landingPage: (document.getElementById('inp-page')?.value?.trim()) || '',
+      };
+    }
+
     function populateReview() {
+      var brief = getCreativeBrief();
       document.getElementById('rev-client').textContent = (document.getElementById('inp-client')?.value?.trim()) || 'Not set';
       document.getElementById('rev-page').textContent = (document.getElementById('inp-page')?.value?.trim()) || 'Not set';
       var b = document.getElementById('inp-budget')?.value || '50';
       document.getElementById('rev-budget').textContent = '$' + b + '/day';
+      document.getElementById('rev-product').textContent = brief.productName || 'Not set';
+      document.getElementById('rev-offer').textContent = brief.offer || 'Not set';
+      document.getElementById('rev-audience').textContent = brief.audience || 'Not set';
+      document.getElementById('rev-pain').textContent = brief.painPoint || 'Not set';
+      document.getElementById('rev-usp').textContent = brief.usp || 'Not set';
+      document.getElementById('rev-goal').textContent = brief.goal || 'purchase';
+      document.getElementById('rev-tone').textContent = brief.tone || 'Not set';
       document.getElementById('rev-notes').textContent = (document.getElementById('inp-notes')?.value?.trim()) || '\\u2014';
 
       document.getElementById('rev-fb').innerHTML = state.metaConnected
@@ -693,6 +754,12 @@ export function launchPage() {
 
       var clientId = (document.getElementById('inp-client')?.value?.trim()) || 'demo-client';
       var pageUrl = (document.getElementById('inp-page')?.value?.trim()) || 'https://facebook.com/demo';
+      var brief = getCreativeBrief();
+      if (!brief.productName || !brief.offer || !brief.audience) {
+        if (btn) { btn.disabled = false; btn.textContent = 'Launch swarm'; }
+        showToast('Please add product, offer, and target audience before launch', 'error');
+        return;
+      }
 
       try {
         var result = await api('/swarms/launch', {
@@ -703,6 +770,7 @@ export function launchPage() {
             metaAccessToken: state.metaConnected ? '__cookie__' : null,
             metaAdAccountId: state.selectedAccountId || null,
             googleAccessToken: null,
+            creativeBrief: brief,
           }
         });
 
