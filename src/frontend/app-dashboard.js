@@ -12,6 +12,85 @@ export function appDashboardPage() {
       border-top: 1px solid rgba(126, 166, 255, 0.18);
     }
     .dash-inner { position: relative; z-index: 1; }
+    .dash-top {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 18px;
+      align-items: stretch;
+      margin-bottom: 26px;
+    }
+    .dash-hero {
+      padding: 26px;
+      border: 1px solid rgba(127, 166, 255, 0.22);
+      background: linear-gradient(180deg, rgba(12, 18, 36, 0.92), rgba(8, 12, 23, 0.92));
+      border-radius: 22px;
+      overflow: hidden;
+      position: relative;
+      min-height: 190px;
+    }
+    .dash-hero::before {
+      content: '';
+      position: absolute;
+      inset: -140px -160px auto auto;
+      width: 420px;
+      height: 420px;
+      background: radial-gradient(circle at 30% 30%, rgba(121, 177, 255, 0.22), transparent 62%);
+      transform: rotate(18deg);
+      pointer-events: none;
+    }
+    .dash-hero-inner { position: relative; z-index: 1; }
+    .dash-hero-title { margin-top: 10px; }
+    .dash-hero-actions { margin-top: 22px; display:flex; gap: 10px; flex-wrap: wrap; }
+
+    .dash-side {
+      padding: 22px 22px;
+      border: 1px solid rgba(127, 166, 255, 0.22);
+      border-radius: 22px;
+      background: rgba(10, 16, 30, 0.76);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .dash-side-top { display:flex; align-items:flex-start; justify-content: space-between; gap: 14px; }
+    .dash-pulse {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+    .dash-pulse .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: var(--green);
+      box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.12);
+    }
+    .dash-side-kpis { display:grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .dash-mini-kpi {
+      border: 1px solid rgba(127, 166, 255, 0.18);
+      background: rgba(6, 10, 20, 0.45);
+      border-radius: 16px;
+      padding: 12px 12px;
+      min-height: 76px;
+    }
+    .dash-mini-kpi .k { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); }
+    .dash-mini-kpi .v { margin-top: 10px; font-family: var(--font-mono); font-weight: 700; font-size: 18px; color: #e7f1ff; }
+    .dash-spark {
+      width: 100%;
+      height: 42px;
+      margin-top: 10px;
+      border-radius: 12px;
+      background: rgba(120, 155, 219, 0.14);
+      border: 1px solid rgba(134, 171, 255, 0.16);
+      overflow: hidden;
+    }
+    .dash-spark canvas { width: 100%; height: 100%; display:block; }
     .dash-stat-label {
       font-family: var(--font-mono);
       font-size: 10px;
@@ -45,16 +124,71 @@ export function appDashboardPage() {
     }
     .dash-card-body-pad { padding: 0 24px 24px; }
     .card.dash-card-flush { padding: 0; overflow: hidden; }
+    .dash-table-note {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .dash-table-note code {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: #cfe4ff;
+      background: rgba(108, 173, 255, 0.08);
+      border: 1px solid rgba(133, 178, 255, 0.2);
+      padding: 4px 8px;
+      border-radius: 999px;
+    }
+    @media (max-width: 980px) {
+      .dash-top { grid-template-columns: 1fr; }
+      .dash-side-kpis { grid-template-columns: 1fr; }
+    }
   </style>
 
   <section class="dash-page">
     <div class="container dash-inner">
-      <div class="flex justify-between items-center" style="flex-wrap:wrap;gap:20px;margin-bottom:52px;">
-        <div>
-          <h1 class="text-section" style="margin-bottom:10px;">Mission Control</h1>
-          <p class="text-body" style="font-size:14px;max-width:520px;">Track active swarms, system telemetry, and campaign operations in one continuous surface.</p>
+      <div class="dash-top">
+        <div class="dash-hero">
+          <div class="dash-hero-inner">
+            <div class="dash-stat-label">Dashboard</div>
+            <h1 class="text-section dash-hero-title">Mission Control</h1>
+            <p class="text-body" style="font-size:14px;max-width:560px;margin-top:14px;">Live swarm operations + system telemetry, in one continuous surface.</p>
+            <div class="dash-hero-actions">
+              <a href="/app/launch" class="btn btn-primary">Launch Swarm</a>
+              <a href="/app/swarms" class="btn btn-secondary">View swarms</a>
+              <button type="button" onclick="toggleAutoRefresh()" class="btn btn-secondary" id="btn-auto">Auto: on</button>
+            </div>
+          </div>
         </div>
-        <a href="/app/launch" class="btn btn-primary">Launch Swarm</a>
+
+        <div class="dash-side">
+          <div class="dash-side-top">
+            <div>
+              <div class="dash-stat-label">System status</div>
+              <div class="text-mono" style="margin-top:10px;font-size:18px;font-weight:700;" id="sys-status">—</div>
+              <div class="dash-pulse" style="margin-top:10px;">
+                <span class="dot" id="pulse-dot"></span>
+                <span id="last-updated">Last updated —</span>
+              </div>
+            </div>
+            <button type="button" onclick="refreshDashboard(true)" class="btn btn-secondary btn-sm">Refresh</button>
+          </div>
+
+          <div class="dash-side-kpis">
+            <div class="dash-mini-kpi">
+              <div class="k">CPU</div>
+              <div class="v" id="mini-cpu">—</div>
+              <div class="dash-spark"><canvas id="spark-cpu"></canvas></div>
+            </div>
+            <div class="dash-mini-kpi">
+              <div class="k">Memory</div>
+              <div class="v" id="mini-mem">—</div>
+              <div class="dash-spark"><canvas id="spark-mem"></canvas></div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div class="grid-4" id="stat-cards">
@@ -82,7 +216,7 @@ export function appDashboardPage() {
       <div class="card dash-card-flush reveal reveal-d5 mt-4">
         <div class="dash-card-split">
           <h2 class="text-headline">Active Swarms</h2>
-          <button type="button" onclick="refreshDashboard()" class="btn btn-secondary btn-sm">Refresh</button>
+          <div class="dash-table-note"><span>Updated</span><code id="table-updated">—</code></div>
         </div>
         <div id="swarm-table-area" class="dash-card-body-pad">
           <div class="empty-state">
@@ -126,8 +260,106 @@ export function appDashboardPage() {
 `,
     scripts: `
   <script>
-    async function refreshDashboard() {
+    var autoRefresh = true;
+    var autoTimer = null;
+    var cpuHistory = [];
+    var memHistory = [];
+
+    function formatTime(ts) {
       try {
+        return new Date(ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      } catch (e) { return '—'; }
+    }
+
+    function pushHistory(arr, v, max) {
+      if (!isFinite(v)) return arr;
+      arr.push(v);
+      if (arr.length > max) arr.splice(0, arr.length - max);
+      return arr;
+    }
+
+    function drawSparkline(canvasId, values, color) {
+      var canvas = document.getElementById(canvasId);
+      if (!canvas) return;
+      var w = canvas.clientWidth || 240;
+      var h = canvas.clientHeight || 42;
+      var dpr = window.devicePixelRatio || 1;
+      canvas.width = Math.floor(w * dpr);
+      canvas.height = Math.floor(h * dpr);
+      var ctx = canvas.getContext('2d');
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, w, h);
+
+      if (!values || values.length < 2) return;
+      var min = Math.min.apply(null, values);
+      var max = Math.max.apply(null, values);
+      var pad = 6;
+      var range = Math.max(1, max - min);
+
+      ctx.beginPath();
+      values.forEach(function(v, i) {
+        var x = pad + (i * (w - pad * 2)) / (values.length - 1);
+        var y = pad + (1 - (v - min) / range) * (h - pad * 2);
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 2;
+      ctx.lineJoin = 'round';
+      ctx.lineCap = 'round';
+      ctx.globalAlpha = 0.9;
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+    }
+
+    function setStatus(cpuPct, memPct) {
+      var statusEl = document.getElementById('sys-status');
+      var dot = document.getElementById('pulse-dot');
+      if (!statusEl || !dot) return;
+
+      var score = Math.max(cpuPct || 0, memPct || 0);
+      var label = score > 85 ? 'Degraded' : score > 60 ? 'Elevated' : 'Healthy';
+      var color = score > 85 ? 'var(--red)' : score > 60 ? 'var(--amber)' : 'var(--green)';
+      statusEl.textContent = label;
+      statusEl.style.color = color;
+      dot.style.background = color;
+      dot.style.boxShadow =
+        score > 85 ? '0 0 0 4px rgba(239, 68, 68, 0.16)' :
+        score > 60 ? '0 0 0 4px rgba(245, 158, 11, 0.16)' :
+        '0 0 0 4px rgba(34, 197, 94, 0.12)';
+    }
+
+    function setLastUpdated(ts) {
+      var t = formatTime(ts);
+      var el = document.getElementById('last-updated');
+      var table = document.getElementById('table-updated');
+      if (el) el.textContent = 'Last updated ' + t;
+      if (table) table.textContent = t;
+    }
+
+    function toggleAutoRefresh() {
+      autoRefresh = !autoRefresh;
+      var btn = document.getElementById('btn-auto');
+      if (btn) btn.textContent = 'Auto: ' + (autoRefresh ? 'on' : 'off');
+      if (autoRefresh) scheduleAuto();
+      else stopAuto();
+    }
+
+    function stopAuto() {
+      if (autoTimer) { clearInterval(autoTimer); autoTimer = null; }
+    }
+
+    function scheduleAuto() {
+      stopAuto();
+      autoTimer = setInterval(function() {
+        if (autoRefresh) refreshDashboard(false);
+      }, 6000);
+    }
+
+    async function refreshDashboard(userTriggered) {
+      try {
+        var now = Date.now();
         var swarms = await api('/swarms');
         var sys = await api('/system');
         var health = await api('/health');
@@ -147,6 +379,9 @@ export function appDashboardPage() {
         document.getElementById('s-cpu').style.color = cpuColor;
         document.getElementById('s-cpu-bar').style.width = (sys.cpuUsagePercent != null ? sys.cpuUsagePercent : 0) + '%';
         document.getElementById('s-cpu-bar').style.background = cpuColor;
+        var miniCpu = document.getElementById('mini-cpu');
+        if (miniCpu) { miniCpu.textContent = (sys.cpuUsagePercent != null ? sys.cpuUsagePercent : '0') + '%'; miniCpu.style.color = cpuColor; }
+        cpuHistory = pushHistory(cpuHistory, cpuPct, 28);
 
         var memPct = parseFloat(sys.memoryUsagePercent);
         var memColor = memPct > 85 ? 'var(--red)' : memPct > 60 ? 'var(--amber)' : 'var(--blue)';
@@ -154,6 +389,9 @@ export function appDashboardPage() {
         document.getElementById('s-mem').style.color = memColor;
         document.getElementById('s-mem-bar').style.width = (sys.memoryUsagePercent != null ? sys.memoryUsagePercent : 0) + '%';
         document.getElementById('s-mem-bar').style.background = memColor;
+        var miniMem = document.getElementById('mini-mem');
+        if (miniMem) { miniMem.textContent = (sys.memoryUsagePercent != null ? sys.memoryUsagePercent : '0') + '%'; miniMem.style.color = memColor; }
+        memHistory = pushHistory(memHistory, memPct, 28);
 
         document.getElementById('sys-host').textContent = sys.hostname != null ? sys.hostname : '—';
         document.getElementById('sys-platform').textContent =
@@ -166,6 +404,11 @@ export function appDashboardPage() {
         var hrs = Math.floor(mins / 60);
         document.getElementById('sys-uptime').textContent =
           hrs > 0 ? hrs + 'h ' + (mins % 60) + 'm' : mins + 'm';
+
+        setStatus(cpuPct, memPct);
+        setLastUpdated(now);
+        drawSparkline('spark-cpu', cpuHistory, cpuColor);
+        drawSparkline('spark-mem', memHistory, memColor);
 
         var list = swarms.swarms || [];
         var area = document.getElementById('swarm-table-area');
@@ -211,6 +454,7 @@ export function appDashboardPage() {
         }
       } catch (e) {
         console.error('Dashboard refresh error:', e);
+        if (userTriggered) showToast('Refresh failed: ' + (e.message || 'Unknown error'), 'error');
       }
     }
 
@@ -224,8 +468,8 @@ export function appDashboardPage() {
       }
     }
 
-    refreshDashboard();
-    setInterval(refreshDashboard, 5000);
+    refreshDashboard(false);
+    scheduleAuto();
   </script>
 `
   });
