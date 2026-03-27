@@ -113,6 +113,71 @@ export function appDashboardPage() {
       color: var(--text-muted);
       margin-top: 6px;
     }
+    .kpi-grid {
+      margin-top: 16px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+    .kpi-tile {
+      border: 1px solid rgba(127, 166, 255, 0.18);
+      background: rgba(8, 13, 24, 0.62);
+      border-radius: 16px;
+      padding: 14px;
+    }
+    .kpi-tile .k {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    .kpi-tile .v {
+      margin-top: 10px;
+      font-family: var(--font-mono);
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      color: #e7f1ff;
+    }
+    .kpi-tile .s {
+      margin-top: 6px;
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+    .insight-list {
+      margin-top: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .insight-item {
+      border: 1px solid rgba(127, 166, 255, 0.18);
+      background: rgba(8, 13, 24, 0.58);
+      border-radius: 14px;
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+    }
+    .insight-item .left {
+      font-size: 13px;
+      color: var(--text-secondary);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .insight-item .left .title {
+      color: #deecff;
+      font-weight: 600;
+    }
+    .insight-item .metric {
+      font-family: var(--font-mono);
+      color: #cde1ff;
+      font-size: 12px;
+      white-space: nowrap;
+    }
     .dash-card-split {
       border-bottom: 1px solid rgba(126, 166, 255, 0.18);
       padding: 20px 24px;
@@ -144,6 +209,7 @@ export function appDashboardPage() {
     @media (max-width: 980px) {
       .dash-top { grid-template-columns: 1fr; }
       .dash-side-kpis { grid-template-columns: 1fr; }
+      .kpi-grid { grid-template-columns: repeat(2, 1fr); }
     }
   </style>
 
@@ -210,6 +276,58 @@ export function appDashboardPage() {
           <div class="dash-stat-label">Memory</div>
           <div class="dash-stat-value text-mono" id="s-mem">—</div>
           <div class="progress mt-1"><div id="s-mem-bar" class="progress-fill" style="width:0%;background:var(--blue);"></div></div>
+        </div>
+      </div>
+
+      <div class="kpi-grid">
+        <div class="kpi-tile reveal reveal-d4">
+          <div class="k">Total Spend</div>
+          <div class="v" id="k-spend">$0</div>
+          <div class="s" id="k-spend-sub">Across all active reports</div>
+        </div>
+        <div class="kpi-tile reveal reveal-d5">
+          <div class="k">ROAS</div>
+          <div class="v" id="k-roas">0.00x</div>
+          <div class="s" id="k-roas-sub">Revenue / spend</div>
+        </div>
+        <div class="kpi-tile reveal reveal-d6">
+          <div class="k">CTR</div>
+          <div class="v" id="k-ctr">0.00%</div>
+          <div class="s" id="k-ctr-sub">Clicks / impressions</div>
+        </div>
+        <div class="kpi-tile reveal reveal-d7">
+          <div class="k">Conversions</div>
+          <div class="v" id="k-conv">0</div>
+          <div class="s" id="k-conv-sub">From latest daily reports</div>
+        </div>
+      </div>
+
+      <div class="grid-2 mt-4" style="align-items:stretch;">
+        <div class="card reveal reveal-d6">
+          <h2 class="text-headline" style="margin-bottom:8px;">Campaign Health</h2>
+          <p class="text-small">Actionable rollout signals from active swarm reports.</p>
+          <div class="insight-list" id="campaign-health-list">
+            <div class="insight-item">
+              <div class="left">
+                <span class="title">No campaign report data yet</span>
+                <span>Launch swarms and let reporting run to populate this section.</span>
+              </div>
+              <span class="metric">—</span>
+            </div>
+          </div>
+        </div>
+        <div class="card reveal reveal-d7">
+          <h2 class="text-headline" style="margin-bottom:8px;">Execution Risks</h2>
+          <p class="text-small">Queue pressure and recent agent failures to triage fast.</p>
+          <div class="insight-list" id="risk-list">
+            <div class="insight-item">
+              <div class="left">
+                <span class="title">No immediate risks detected</span>
+                <span>System will flag bottlenecks and error spikes here.</span>
+              </div>
+              <span class="metric">Healthy</span>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -357,6 +475,21 @@ export function appDashboardPage() {
       }, 6000);
     }
 
+    function formatCurrency(n) {
+      var v = isFinite(n) ? n : 0;
+      return '$' + v.toLocaleString(undefined, { maximumFractionDigits: 0 });
+    }
+
+    function formatCompact(n) {
+      var v = isFinite(n) ? n : 0;
+      return v.toLocaleString(undefined, { maximumFractionDigits: 0 });
+    }
+
+    function formatPct(n) {
+      var v = isFinite(n) ? n : 0;
+      return v.toFixed(2) + '%';
+    }
+
     async function refreshDashboard(userTriggered) {
       try {
         var now = Date.now();
@@ -411,6 +544,105 @@ export function appDashboardPage() {
         drawSparkline('spark-mem', memHistory, memColor);
 
         var list = swarms.swarms || [];
+        var reportResults = await Promise.all(
+          list.map(async function(s) {
+            try {
+              var report = await api('/swarms/' + s.swarmId + '/report');
+              if (report && report.metrics) return { swarmId: s.swarmId, clientId: s.clientId, report: report };
+            } catch (e) {}
+            return null;
+          })
+        );
+        var reports = reportResults.filter(Boolean);
+
+        var reportAgg = {
+          spend: 0, revenue: 0, impressions: 0, clicks: 0, conversions: 0, activeCampaigns: 0, pausedAdSets: 0,
+        };
+        reports.forEach(function(r) {
+          var m = r.report.metrics || {};
+          reportAgg.spend += Number(m.totalSpend || 0);
+          reportAgg.revenue += Number(m.totalRevenue || 0);
+          reportAgg.impressions += Number(m.totalImpressions || 0);
+          reportAgg.clicks += Number(m.totalClicks || 0);
+          reportAgg.conversions += Number(m.totalConversions || 0);
+          reportAgg.activeCampaigns += Number(m.activeCampaigns || 0);
+          reportAgg.pausedAdSets += Number(m.pausedAdSets || 0);
+        });
+        var aggRoas = reportAgg.spend > 0 ? (reportAgg.revenue / reportAgg.spend) : 0;
+        var aggCtr = reportAgg.impressions > 0 ? ((reportAgg.clicks / reportAgg.impressions) * 100) : 0;
+
+        document.getElementById('k-spend').textContent = formatCurrency(reportAgg.spend);
+        document.getElementById('k-roas').textContent = aggRoas.toFixed(2) + 'x';
+        document.getElementById('k-ctr').textContent = formatPct(aggCtr);
+        document.getElementById('k-conv').textContent = formatCompact(reportAgg.conversions);
+        document.getElementById('k-spend-sub').textContent = reports.length > 0 ? ('From ' + reports.length + ' active report(s)') : 'No reports available yet';
+        document.getElementById('k-roas-sub').textContent = reportAgg.revenue > 0 ? ('Revenue ' + formatCurrency(reportAgg.revenue)) : 'Revenue / spend';
+        document.getElementById('k-ctr-sub').textContent = reportAgg.impressions > 0 ? (formatCompact(reportAgg.clicks) + ' clicks / ' + formatCompact(reportAgg.impressions) + ' impressions') : 'Clicks / impressions';
+        document.getElementById('k-conv-sub').textContent = reports.length > 0 ? (formatCompact(reportAgg.activeCampaigns) + ' active campaigns') : 'From latest daily reports';
+
+        var healthList = document.getElementById('campaign-health-list');
+        if (healthList) {
+          if (!reports.length) {
+            healthList.innerHTML =
+              '<div class="insight-item"><div class="left"><span class="title">No campaign report data yet</span><span>Launch swarms and let reporting run to populate this section.</span></div><span class="metric">—</span></div>';
+          } else {
+            var topRoas = reports.slice().sort(function(a, b) {
+              var ar = Number((a.report.metrics || {}).overallRoas || 0);
+              var br = Number((b.report.metrics || {}).overallRoas || 0);
+              return br - ar;
+            }).slice(0, 3);
+            var htmlHealth = '';
+            topRoas.forEach(function(entry) {
+              var m = entry.report.metrics || {};
+              htmlHealth +=
+                '<div class="insight-item">' +
+                '<div class="left"><span class="title">' + (entry.clientId || entry.swarmId) + '</span>' +
+                '<span>' + formatCompact(Number(m.activeCampaigns || 0)) + ' active campaigns, ' + formatCompact(Number(m.pausedAdSets || 0)) + ' paused ad sets</span></div>' +
+                '<span class="metric">ROAS ' + Number(m.overallRoas || 0).toFixed(2) + 'x</span>' +
+                '</div>';
+            });
+            healthList.innerHTML = htmlHealth;
+          }
+        }
+
+        var riskList = document.getElementById('risk-list');
+        if (riskList) {
+          var risks = [];
+          list.forEach(function(s) {
+            var q = s.queue || {};
+            var queued = Number(q.queued || 0);
+            var running = Number(q.running || 0);
+            if (queued > 6) {
+              risks.push({
+                title: (s.clientId || s.swarmId) + ' queue backlog',
+                detail: queued + ' queued, ' + running + ' running',
+                metric: 'Queue high'
+              });
+            }
+            if (s.agents) {
+              Object.keys(s.agents).forEach(function(name) {
+                var a = s.agents[name];
+                var errCount = (a.recentErrors || []).length;
+                if (a.status === 'error' || errCount > 0) {
+                  risks.push({
+                    title: (s.clientId || s.swarmId) + ' · ' + name + ' agent',
+                    detail: errCount + ' recent error(s)',
+                    metric: a.status === 'error' ? 'Error' : 'Warn'
+                  });
+                }
+              });
+            }
+          });
+          if (!risks.length) {
+            riskList.innerHTML =
+              '<div class="insight-item"><div class="left"><span class="title">No immediate risks detected</span><span>Queue and agent status are stable across active swarms.</span></div><span class="metric">Healthy</span></div>';
+          } else {
+            riskList.innerHTML = risks.slice(0, 4).map(function(r) {
+              return '<div class="insight-item"><div class="left"><span class="title">' + r.title + '</span><span>' + r.detail + '</span></div><span class="metric">' + r.metric + '</span></div>';
+            }).join('');
+          }
+        }
+
         var area = document.getElementById('swarm-table-area');
         if (list.length === 0) {
           area.innerHTML =
