@@ -21,9 +21,9 @@ export function homePage({ isLoggedIn = false } = {}) {
     }
     .hero-wrap {
       display: grid;
-      grid-template-columns: 1.2fr 0.8fr;
-      gap: 26px;
-      align-items: start;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      align-items: center;
     }
     .hero-copy p { max-width: 620px; }
     .hero-subtle {
@@ -84,9 +84,11 @@ export function homePage({ isLoggedIn = false } = {}) {
       overflow: hidden;
       background: rgba(7, 11, 22, 0.92);
       width: 100%;
-      max-width: 640px;
+      max-width: min(100%, 780px);
       aspect-ratio: 16 / 10;
-      justify-self: end;
+      justify-self: center;
+      align-self: center;
+      margin: 0 auto;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -238,11 +240,12 @@ export function homePage({ isLoggedIn = false } = {}) {
     }
 
     @media (max-width: 980px) {
-      .hero-wrap { grid-template-columns: 1fr; }
+      .hero-wrap { grid-template-columns: 1fr; align-items: start; gap: 28px; }
       .hero-metrics { grid-template-columns: 1fr; }
       .hero-video {
         max-width: 100%;
-        justify-self: stretch;
+        justify-self: center;
+        align-self: center;
         aspect-ratio: 16 / 9;
       }
       .build-grid { grid-template-columns: 1fr; }
