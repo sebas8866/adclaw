@@ -3,15 +3,6 @@ import { logger } from '../utils/logger.js';
 
 const META_GRAPH_URL = 'https://graph.facebook.com/v21.0';
 
-/**
- * Meta Ads OAuth & API integration.
- *
- * Required scopes:
- *   - ads_management
- *   - ads_read
- *   - pages_read_engagement
- *   - business_management
- */
 export class MetaAdsClient {
   constructor({ accessToken, adAccountId }) {
     this.accessToken = accessToken;
@@ -21,8 +12,6 @@ export class MetaAdsClient {
   get headers() {
     return { Authorization: `Bearer ${this.accessToken}` };
   }
-
-  // ── OAuth Flow Helpers ──────────────────────────────────────────
 
   static getAuthUrl({ appId, redirectUri, state }) {
     const scopes = [
@@ -44,7 +33,7 @@ export class MetaAdsClient {
         code,
       },
     });
-    return res.data; // { access_token, token_type, expires_in }
+    return res.data;
   }
 
   static async getLongLivedToken({ shortToken, appId, appSecret }) {
@@ -56,10 +45,15 @@ export class MetaAdsClient {
         fb_exchange_token: shortToken,
       },
     });
-    return res.data; // { access_token, token_type, expires_in }
+    return res.data;
   }
 
-  // ── Ad Account ──────────────────────────────────────────────────
+  static async getMe(accessToken) {
+    const res = await axios.get(`${META_GRAPH_URL}/me`, {
+      params: { fields: 'id,name', access_token: accessToken },
+    });
+    return res.data;
+  }
 
   async getAdAccounts() {
     const res = await axios.get(`${META_GRAPH_URL}/me/adaccounts`, {
@@ -68,8 +62,6 @@ export class MetaAdsClient {
     });
     return res.data.data;
   }
-
-  // ── Campaign CRUD ───────────────────────────────────────────────
 
   async createCampaign({ name, objective = 'OUTCOME_SALES', status = 'PAUSED', specialAdCategories = [] }) {
     const res = await axios.post(
@@ -102,15 +94,13 @@ export class MetaAdsClient {
     return res.data;
   }
 
-  // ── Ad Set CRUD ─────────────────────────────────────────────────
-
   async createAdSet({ campaignId, name, dailyBudget, targeting, startTime }) {
     const res = await axios.post(
       `${META_GRAPH_URL}/act_${this.adAccountId}/adsets`,
       {
         campaign_id: campaignId,
         name,
-        daily_budget: Math.round(dailyBudget * 100), // cents
+        daily_budget: Math.round(dailyBudget * 100),
         billing_event: 'IMPRESSIONS',
         optimization_goal: 'OFFSITE_CONVERSIONS',
         targeting,
@@ -121,8 +111,6 @@ export class MetaAdsClient {
     );
     return res.data;
   }
-
-  // ── Insights ────────────────────────────────────────────────────
 
   async getInsights(objectId, { datePreset = 'last_7d', level = 'ad' } = {}) {
     const res = await axios.get(`${META_GRAPH_URL}/${objectId}/insights`, {
@@ -136,8 +124,6 @@ export class MetaAdsClient {
     return res.data.data;
   }
 
-  // ── Page Info ───────────────────────────────────────────────────
-
   async getPageInfo(pageId) {
     const res = await axios.get(`${META_GRAPH_URL}/${pageId}`, {
       headers: this.headers,
@@ -147,53 +133,85 @@ export class MetaAdsClient {
   }
 }
 
-// ── Express Route Handlers ──────────────────────────────────────────
+function getRedirectUri(req) {
+  if (process.env.META_REDIRECT_URI) return process.env.META_REDIRECT_URI;
+  const proto = req.headers['x-forwarded-proto'] || req.protocol;
+  const host = req.headers['x-forwarded-host'] || req.get('host');
+  return `${proto}://${host}/auth/meta/callback`;
+}
 
 export function metaAuthRoutes(app) {
   app.get('/auth/meta', (req, res) => {
-    const state = Buffer.from(JSON.stringify({ ts: Date.now() })).toString('base64');
-    const url = MetaAdsClient.getAuthUrl({
-      appId: process.env.META_APP_ID,
-      redirectUri: process.env.META_REDIRECT_URI,
-      state,
-    });
+    const appId = process.env.META_APP_ID;
+    if (!appId) {
+      return res.redirect('/app/launch?meta=error&reason=not_configured');
+    }
+
+    const redirectUri = getRedirectUri(req);
+    const state = Buffer.from(JSON.stringify({ ts: Date.now(), redirect: redirectUri })).toString('base64');
+
+    const url = MetaAdsClient.getAuthUrl({ appId, redirectUri, state });
     res.redirect(url);
   });
 
   app.get('/auth/meta/callback', async (req, res) => {
-    const { code, state } = req.query;
+    const { code, error_reason } = req.query;
 
-    if (!code) {
-      return res.status(400).json({ error: 'No authorization code received' });
+    if (error_reason || !code) {
+      return res.redirect('/app/launch?meta=error&reason=' + encodeURIComponent(error_reason || 'no_code'));
     }
+
+    const appId = process.env.META_APP_ID;
+    const appSecret = process.env.META_APP_SECRET;
+    const redirectUri = getRedirectUri(req);
 
     try {
-      // Exchange code for short-lived token
-      const shortToken = await MetaAdsClient.exchangeCode({
-        code,
-        appId: process.env.META_APP_ID,
-        appSecret: process.env.META_APP_SECRET,
-        redirectUri: process.env.META_REDIRECT_URI,
+      const shortToken = await MetaAdsClient.exchangeCode({ code, appId, appSecret, redirectUri });
+
+      let accessToken = shortToken.access_token;
+      try {
+        const longToken = await MetaAdsClient.getLongLivedToken({ shortToken: accessToken, appId, appSecret });
+        accessToken = longToken.access_token;
+      } catch (e) {
+        logger.warn('Could not get long-lived token, using short-lived: ' + e.message);
+      }
+
+      const me = await MetaAdsClient.getMe(accessToken);
+
+      res.cookie('meta_access_token', accessToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production' || !!process.env.VERCEL,
+        sameSite: 'lax',
+        maxAge: 60 * 24 * 60 * 60 * 1000,
+        path: '/',
       });
 
-      // Exchange for long-lived token (60 days)
-      const longToken = await MetaAdsClient.getLongLivedToken({
-        shortToken: shortToken.access_token,
-        appId: process.env.META_APP_ID,
-        appSecret: process.env.META_APP_SECRET,
+      res.cookie('meta_user_name', me.name || 'Connected', {
+        maxAge: 60 * 24 * 60 * 60 * 1000,
+        path: '/',
       });
 
-      logger.info('Meta OAuth complete — long-lived token obtained');
-
-      // TODO: Store token securely (encrypted in DB)
-      res.json({
-        success: true,
-        expiresIn: longToken.expires_in,
-        message: 'Meta Ads connected successfully',
-      });
+      logger.info(`Meta OAuth complete for ${me.name} (${me.id})`);
+      res.redirect('/app/launch?meta=success&name=' + encodeURIComponent(me.name || ''));
     } catch (err) {
       logger.error(`Meta OAuth failed: ${err.message}`);
-      res.status(500).json({ error: 'OAuth failed', detail: err.message });
+      res.redirect('/app/launch?meta=error&reason=' + encodeURIComponent(err.message));
     }
+  });
+
+  app.get('/api/meta/status', (req, res) => {
+    const token = req.cookies?.meta_access_token;
+    const name = req.cookies?.meta_user_name;
+    if (token) {
+      res.json({ connected: true, name: name || 'Connected' });
+    } else {
+      res.json({ connected: false });
+    }
+  });
+
+  app.post('/api/meta/disconnect', (req, res) => {
+    res.clearCookie('meta_access_token');
+    res.clearCookie('meta_user_name');
+    res.json({ disconnected: true });
   });
 }

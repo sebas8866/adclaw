@@ -7,7 +7,7 @@ const supabase = supabaseUrl && supabaseServiceKey
   ? createClient(supabaseUrl, supabaseServiceKey)
   : null;
 
-const PUBLIC_PATHS = ['/auth/login', '/auth/signup', '/auth/callback', '/api/health'];
+const PUBLIC_PATHS = ['/auth/login', '/auth/signup', '/auth/callback', '/auth/meta', '/api/health'];
 
 export function requireAuth(req, res, next) {
   if (PUBLIC_PATHS.some(p => req.path.startsWith(p))) {

@@ -52,10 +52,14 @@ export function createApiRouter(swarmManager) {
         return res.status(400).json({ error: 'clientId and businessPageUrl are required' });
       }
 
+      const resolvedMetaToken = metaAccessToken === '__cookie__'
+        ? req.cookies?.meta_access_token
+        : metaAccessToken;
+
       const swarm = await swarmManager.launch({
         clientId,
         businessPageUrl,
-        metaAccessToken,
+        metaAccessToken: resolvedMetaToken || null,
         googleAccessToken,
       });
 
