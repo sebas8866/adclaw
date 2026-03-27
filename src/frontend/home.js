@@ -4,6 +4,7 @@ export function homePage() {
   return pageWrapper({
     title: 'Autonomous AI Ad Agency',
     activeNav: 'home',
+    publicNav: true,
     body: `
   <style>
     .home-hero {
@@ -235,7 +236,7 @@ export function homePage() {
           Connect Meta &amp; Google Ads. Paste your business page. A dedicated AI agent swarm handles research, creatives, optimization, and reporting around the clock.
         </p>
         <div class="flex gap-2 reveal reveal-d4" style="margin-top: 36px; flex-wrap: wrap;">
-          <a href="/app/launch" class="btn btn-primary btn-lg">Start now</a>
+          <a href="/auth/signup" class="btn btn-primary btn-lg">Get started free</a>
           <a href="#how" class="btn btn-secondary btn-lg">How it works</a>
         </div>
       </div>
@@ -396,7 +397,7 @@ export function homePage() {
             <li>Email support</li>
           </ul>
           <div class="home-price-actions">
-            <a href="/app/launch" class="btn btn-ghost">Get started</a>
+            <a href="/auth/signup" class="btn btn-ghost">Get started</a>
           </div>
         </article>
 
@@ -412,7 +413,7 @@ export function homePage() {
             <li>Daily Opus reviews</li>
           </ul>
           <div class="home-price-actions">
-            <a href="/app/launch" class="btn btn-primary">Start free trial</a>
+            <a href="/auth/signup" class="btn btn-primary">Start free trial</a>
           </div>
         </article>
 
@@ -428,7 +429,7 @@ export function homePage() {
             <li>Custom agent tuning</li>
           </ul>
           <div class="home-price-actions">
-            <a href="/app/launch" class="btn btn-ghost">Contact sales</a>
+            <a href="/auth/signup" class="btn btn-ghost">Contact sales</a>
           </div>
         </article>
       </div>
@@ -442,7 +443,7 @@ export function homePage() {
         Set up takes under five minutes. Your swarm starts optimizing immediately.
       </p>
       <div class="reveal reveal-d2" style="margin-top: 36px;">
-        <a href="/app/launch" class="btn btn-primary btn-lg">Start now</a>
+        <a href="/auth/signup" class="btn btn-primary btn-lg">Get started free</a>
       </div>
     </div>
   </section>

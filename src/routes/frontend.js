@@ -19,14 +19,14 @@ export function createFrontendRouter() {
 
   router.get('/auth/logout', (req, res) => {
     res.clearCookie('sb_access_token');
-    res.redirect('/auth/login');
+    res.redirect('/');
   });
-
-  router.use(requireAuth);
 
   router.get('/', (req, res) => {
     res.type('html').send(homePage());
   });
+
+  router.use(requireAuth);
 
   router.get('/app', (req, res) => {
     res.type('html').send(appDashboardPage());
