@@ -102,10 +102,48 @@ export class MetaAdsClient {
         name,
         daily_budget: Math.round(dailyBudget * 100),
         billing_event: 'IMPRESSIONS',
-        optimization_goal: 'OFFSITE_CONVERSIONS',
+        optimization_goal: 'LINK_CLICKS',
+        destination_type: 'WEBSITE',
         targeting,
         start_time: startTime || new Date().toISOString(),
-        status: 'ACTIVE',
+        status: 'PAUSED',
+      },
+      { headers: this.headers }
+    );
+    return res.data;
+  }
+
+  async createAdCreative({ name, pageId, message, title, linkUrl, imageUrl, ctaType = 'LEARN_MORE' }) {
+    const payload = {
+      name,
+      object_story_spec: {
+        page_id: pageId,
+        link_data: {
+          message,
+          name: title,
+          link: linkUrl,
+          image_url: imageUrl,
+          call_to_action: { type: ctaType, value: { link: linkUrl } },
+        },
+      },
+    };
+
+    const res = await axios.post(
+      `${META_GRAPH_URL}/act_${this.adAccountId}/adcreatives`,
+      payload,
+      { headers: this.headers }
+    );
+    return res.data;
+  }
+
+  async createAd({ name, adSetId, creativeId, status = 'PAUSED' }) {
+    const res = await axios.post(
+      `${META_GRAPH_URL}/act_${this.adAccountId}/ads`,
+      {
+        name,
+        adset_id: adSetId,
+        creative: { creative_id: creativeId },
+        status,
       },
       { headers: this.headers }
     );

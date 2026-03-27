@@ -426,6 +426,14 @@ export function launchPage() {
             <input type="text" id="inp-tone" class="form-input" placeholder="e.g. Premium, clean, trustworthy">
           </div>
           <div class="form-group">
+            <label for="inp-page-id">Facebook Page ID (required for Meta ad creation)</label>
+            <input type="text" id="inp-page-id" class="form-input" placeholder="e.g. 123456789012345">
+          </div>
+          <div class="form-group">
+            <label for="inp-destination">Destination URL (required)</label>
+            <input type="url" id="inp-destination" class="form-input" placeholder="https://yourdomain.com/offer" inputmode="url">
+          </div>
+          <div class="form-group">
             <label for="inp-notes">Notes</label>
             <textarea id="inp-notes" class="form-input" rows="3" placeholder="Goals, audiences, or constraints (optional)"></textarea>
           </div>
@@ -453,6 +461,8 @@ export function launchPage() {
             <div class="metric-row"><span class="metric-label">USP</span><span class="metric-value" id="rev-usp">&mdash;</span></div>
             <div class="metric-row"><span class="metric-label">Goal</span><span class="metric-value" id="rev-goal">&mdash;</span></div>
             <div class="metric-row"><span class="metric-label">Tone</span><span class="metric-value" id="rev-tone">&mdash;</span></div>
+            <div class="metric-row"><span class="metric-label">FB page ID</span><span class="metric-value" id="rev-page-id">&mdash;</span></div>
+            <div class="metric-row"><span class="metric-label">Destination URL</span><span class="metric-value" id="rev-destination" style="max-width:min(360px,55vw);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">&mdash;</span></div>
             <div class="metric-row"><span class="metric-label">Notes</span><span class="metric-value" id="rev-notes" style="white-space:pre-wrap;font-weight:500;">&mdash;</span></div>
             <div class="metric-row"><span class="metric-label">Facebook</span><span id="rev-fb">&mdash;</span></div>
             <div class="metric-row"><span class="metric-label">Ad account</span><span id="rev-account">&mdash;</span></div>
@@ -717,6 +727,8 @@ export function launchPage() {
         usp: (document.getElementById('inp-usp')?.value?.trim()) || '',
         goal: (document.getElementById('inp-goal')?.value?.trim()) || 'purchase',
         tone: (document.getElementById('inp-tone')?.value?.trim()) || '',
+        pageId: (document.getElementById('inp-page-id')?.value?.trim()) || '',
+        destinationUrl: (document.getElementById('inp-destination')?.value?.trim()) || '',
         landingPage: (document.getElementById('inp-page')?.value?.trim()) || '',
       };
     }
@@ -734,6 +746,8 @@ export function launchPage() {
       document.getElementById('rev-usp').textContent = brief.usp || 'Not set';
       document.getElementById('rev-goal').textContent = brief.goal || 'purchase';
       document.getElementById('rev-tone').textContent = brief.tone || 'Not set';
+      document.getElementById('rev-page-id').textContent = brief.pageId || 'Not set';
+      document.getElementById('rev-destination').textContent = brief.destinationUrl || 'Not set';
       document.getElementById('rev-notes').textContent = (document.getElementById('inp-notes')?.value?.trim()) || '\\u2014';
 
       document.getElementById('rev-fb').innerHTML = state.metaConnected
@@ -755,9 +769,9 @@ export function launchPage() {
       var clientId = (document.getElementById('inp-client')?.value?.trim()) || 'demo-client';
       var pageUrl = (document.getElementById('inp-page')?.value?.trim()) || 'https://facebook.com/demo';
       var brief = getCreativeBrief();
-      if (!brief.productName || !brief.offer || !brief.audience) {
+      if (!brief.productName || !brief.offer || !brief.audience || !brief.pageId || !brief.destinationUrl) {
         if (btn) { btn.disabled = false; btn.textContent = 'Launch swarm'; }
-        showToast('Please add product, offer, and target audience before launch', 'error');
+        showToast('Please add product, offer, audience, page ID, and destination URL before launch', 'error');
         return;
       }
 

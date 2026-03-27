@@ -1,6 +1,7 @@
 import { BaseAgent } from './base.js';
 import { queryLocal, queryOpus, tieredQuery } from '../core/intelligence.js';
 import { config } from '../config/defaults.js';
+import { MetaAdsClient } from '../integrations/meta-oauth.js';
 
 /**
  * Launch & Optimization Agent — the core campaign engine.
@@ -17,11 +18,32 @@ export class LaunchOptimizeAgent extends BaseAgent {
     super(swarm, 'launch-optimize');
   }
 
+  _buildMetaTargeting() {
+    const t = this.state.insights?.targetAudience || {};
+    const geo = t.geo_locations || { countries: ['US'] };
+
+    return {
+      geo_locations: geo,
+      age_min: Number(t.age_min || 21),
+      age_max: Number(t.age_max || 55),
+      publisher_platforms: Array.isArray(t.publisher_platforms) && t.publisher_platforms.length
+        ? t.publisher_platforms
+        : ['facebook', 'instagram'],
+      facebook_positions: Array.isArray(t.facebook_positions) && t.facebook_positions.length
+        ? t.facebook_positions
+        : ['feed', 'story'],
+      instagram_positions: Array.isArray(t.instagram_positions) && t.instagram_positions.length
+        ? t.instagram_positions
+        : ['stream', 'story'],
+    };
+  }
+
   /**
    * Launch a new campaign using approved creatives.
    */
   async launchCampaign() {
     return this.run('launchCampaign', async () => {
+      const brief = this.state.creativeBrief || {};
       const approvedCreatives = this.state.creatives.filter(
         (c) => c.status === 'approved' || c.status === 'pending_review'
       );
@@ -52,13 +74,91 @@ export class LaunchOptimizeAgent extends BaseAgent {
           roas: 0,
           launchedAt: new Date(),
         })),
+        meta: {
+          executed: false,
+          errors: [],
+          createdAdSets: 0,
+          createdAds: 0,
+        },
       };
 
-      this.state.campaigns.push(campaign);
-      this.log.info(`Campaign ${campaign.id} launched with ${campaign.adSets.length} ad sets`);
+      const hasMetaExecution = !!(this.swarm.metaAccessToken && this.swarm.metaAdAccountId);
+      if (hasMetaExecution) {
+        try {
+          if (!brief.pageId || !brief.destinationUrl) {
+            throw new Error('Meta launch requires Facebook Page ID and destination URL in launch details.');
+          }
 
-      // TODO: Actually call Meta Ads API via this.swarm.metaAccessToken
-      // const metaResult = await metaApi.createCampaign(campaign, this.swarm.metaAccessToken);
+          const meta = new MetaAdsClient({
+            accessToken: this.swarm.metaAccessToken,
+            adAccountId: this.swarm.metaAdAccountId,
+          });
+
+          const metaCampaign = await meta.createCampaign({
+            name: `${this.swarm.clientId} • AdClaw ${new Date().toISOString().slice(0, 10)}`,
+            objective: 'OUTCOME_TRAFFIC',
+            status: 'PAUSED',
+            specialAdCategories: [],
+          });
+
+          campaign.metaCampaignId = metaCampaign.id;
+          campaign.targeting = this._buildMetaTargeting();
+
+          for (let i = 0; i < campaign.adSets.length; i++) {
+            const adSet = campaign.adSets[i];
+            const created = await meta.createAdSet({
+              campaignId: metaCampaign.id,
+              name: `${this.swarm.clientId} • Set ${i + 1}`,
+              dailyBudget: Math.max(5, campaign.budget.daily / Math.max(1, campaign.adSets.length)),
+              targeting: campaign.targeting,
+            });
+            adSet.metaAdSetId = created.id;
+            campaign.meta.createdAdSets++;
+
+            const creative = approvedCreatives[i] || approvedCreatives[0];
+            if (!creative || !creative.image?.url) {
+              campaign.meta.errors.push(`Skipped ad creation for ad set ${created.id}: no generated image URL.`);
+              continue;
+            }
+
+            const ctaType = (creative.copy?.callToAction || 'LEARN_MORE').toUpperCase();
+            const adCreative = await meta.createAdCreative({
+              name: `${this.swarm.clientId} • Creative ${i + 1}`,
+              pageId: brief.pageId,
+              message: creative.copy?.primaryText || `${brief.offer || 'Special offer'} available now.`,
+              title: creative.copy?.headline || `${brief.productName || this.swarm.clientId}`,
+              linkUrl: brief.destinationUrl,
+              imageUrl: creative.image.url,
+              ctaType,
+            });
+            adSet.metaCreativeId = adCreative.id;
+
+            const ad = await meta.createAd({
+              name: `${this.swarm.clientId} • Ad ${i + 1}`,
+              adSetId: created.id,
+              creativeId: adCreative.id,
+              status: 'PAUSED',
+            });
+            adSet.metaAdId = ad.id;
+            campaign.meta.createdAds++;
+          }
+
+          campaign.meta.executed = true;
+          this.log.info(`Meta campaign ${metaCampaign.id} created on act_${this.swarm.metaAdAccountId}`);
+        } catch (err) {
+          campaign.status = 'local_only';
+          campaign.launchError = err.message;
+          campaign.meta.errors.push(err.message);
+          this.log.error(`Meta launch failed: ${err.message}`);
+        }
+      } else {
+        campaign.status = 'local_only';
+        campaign.launchError = 'Meta token/account not connected; running simulation mode.';
+        campaign.meta.errors.push(campaign.launchError);
+      }
+
+      this.state.campaigns.push(campaign);
+      this.log.info(`Campaign ${campaign.id} launched with ${campaign.adSets.length} ad sets (${campaign.status})`);
 
       return campaign;
     });
