@@ -20,7 +20,7 @@ const PROVIDERS = [
       width: opts.width || 1080,
       height: opts.height || 1080,
       num_images: opts.count || 1,
-      model: opts.model || 'nano-banana-pro',
+      model: opts.model || process.env.NANO_BANANA_MODEL || 'nano-banana-2',
     }),
     mapResponse: (data) => ({
       url: data.data?.[0]?.url || data.images?.[0]?.url,

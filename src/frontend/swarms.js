@@ -6,7 +6,7 @@ export function swarmsPage() {
     activeNav: 'swarms',
     body: `
   <style>
-    .swarms-page { padding: 48px 0 80px; }
+    .swarms-page { padding: 94px 0 122px; border-top: 1px solid rgba(126, 166, 255, 0.18); }
     .swarms-head {
       display: flex; justify-content: space-between; align-items: flex-start;
       flex-wrap: wrap; gap: 16px; margin-bottom: 8px;
@@ -44,7 +44,7 @@ export function swarmsPage() {
     .swarm-card-actions { display: flex; flex-wrap: wrap; gap: 8px; }
     .agent-pills {
       display: flex; flex-wrap: wrap; gap: 8px;
-      margin-top: 20px;
+      margin-top: 24px;
       padding-top: 16px;
       border-top: 1px solid var(--border);
     }
@@ -83,8 +83,8 @@ export function swarmsPage() {
     <div class="container">
       <header class="swarms-head reveal">
         <div>
-          <h1>Agent Swarms</h1>
-          <p class="swarms-sub">Monitor running swarms, queue depth, and agent health.</p>
+          <h1>Swarm Sessions</h1>
+          <p class="swarms-sub">Monitor active swarm sessions, queue pressure, and module health in realtime.</p>
         </div>
         <div class="flex gap-2 items-center">
           <button type="button" onclick="loadSwarms()" class="btn btn-ghost btn-sm">Refresh</button>

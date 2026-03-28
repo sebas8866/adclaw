@@ -2,6 +2,8 @@ import express from 'express';
 import os from 'os';
 import { metaAuthRoutes } from '../integrations/meta-oauth.js';
 import { handleWebhook } from '../integrations/stripe-billing.js';
+import { deliverContactInquiry } from '../integrations/contact-mail.js';
+import { logger } from '../utils/logger.js';
 
 export function createApiRouter(swarmManager) {
   const router = express.Router();
@@ -10,6 +12,46 @@ export function createApiRouter(swarmManager) {
 
   router.get('/health', (req, res) => {
     res.json({ status: 'ok', uptime: process.uptime(), timestamp: new Date() });
+  });
+
+  router.post('/contact', async (req, res) => {
+    try {
+      const { name, email, company, message, website } = req.body || {};
+
+      if (website) {
+        return res.json({ ok: true });
+      }
+
+      const cleanName = typeof name === 'string' ? name.trim() : '';
+      const cleanEmail = typeof email === 'string' ? email.trim() : '';
+      const cleanCompany = typeof company === 'string' ? company.trim() : '';
+      const cleanMessage = typeof message === 'string' ? message.trim() : '';
+
+      if (!cleanName || cleanName.length > 120) {
+        return res.status(400).json({ error: 'Please enter your name (max 120 characters).' });
+      }
+      if (!cleanEmail || cleanEmail.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
+        return res.status(400).json({ error: 'Please enter a valid email address.' });
+      }
+      if (cleanCompany.length > 200) {
+        return res.status(400).json({ error: 'Company name is too long.' });
+      }
+      if (!cleanMessage || cleanMessage.length > 8000) {
+        return res.status(400).json({ error: 'Please enter a message (max 8000 characters).' });
+      }
+
+      await deliverContactInquiry({
+        name: cleanName,
+        email: cleanEmail,
+        company: cleanCompany || undefined,
+        message: cleanMessage,
+      });
+
+      res.json({ ok: true });
+    } catch (err) {
+      logger.error('POST /contact', { message: err.message });
+      res.status(500).json({ error: err.message || 'Could not send message. Try again later.' });
+    }
   });
 
   router.get('/system', (req, res) => {
@@ -46,17 +88,25 @@ export function createApiRouter(swarmManager) {
    */
   router.post('/swarms/launch', async (req, res) => {
     try {
-      const { clientId, businessPageUrl, metaAccessToken, googleAccessToken } = req.body;
+      const { clientId, businessPageUrl, metaAccessToken, metaAdAccountId, googleAccessToken, creativeBrief } = req.body;
 
       if (!clientId || !businessPageUrl) {
         return res.status(400).json({ error: 'clientId and businessPageUrl are required' });
       }
 
+      const resolvedMetaToken = metaAccessToken === '__cookie__'
+        ? req.cookies?.meta_access_token
+        : metaAccessToken;
+
+      const resolvedAdAccount = metaAdAccountId || req.cookies?.meta_ad_account_id || null;
+
       const swarm = await swarmManager.launch({
         clientId,
         businessPageUrl,
-        metaAccessToken,
+        metaAccessToken: resolvedMetaToken || null,
+        metaAdAccountId: resolvedAdAccount,
         googleAccessToken,
+        creativeBrief: creativeBrief || null,
       });
 
       res.status(201).json({
@@ -115,6 +165,32 @@ export function createApiRouter(swarmManager) {
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
+  });
+
+  // ── Data Deletion ───────────────────────────────────────────────
+
+  router.post('/data-deletion', (req, res) => {
+    const { email, reason } = req.body;
+    if (!email) return res.status(400).json({ error: 'Email is required' });
+
+    const confirmationCode = 'DEL-' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).substring(2, 6).toUpperCase();
+    logger.info(`Data deletion request: ${email} — code: ${confirmationCode} — reason: ${reason || 'none'}`);
+
+    res.json({ confirmationCode, message: 'Deletion request received. We will process within 30 days.' });
+  });
+
+  router.post('/data-deletion/facebook', (req, res) => {
+    const signed_request = req.body.signed_request;
+    const confirmationCode = 'FB-DEL-' + Date.now().toString(36).toUpperCase();
+    logger.info(`Facebook data deletion callback received — code: ${confirmationCode}`);
+
+    const proto = req.headers['x-forwarded-proto'] || req.protocol;
+    const host = req.headers['x-forwarded-host'] || req.get('host');
+
+    res.json({
+      url: `${proto}://${host}/data-deletion?code=${confirmationCode}`,
+      confirmation_code: confirmationCode,
+    });
   });
 
   // ── Stripe Webhook ────────────────────────────────────────────────

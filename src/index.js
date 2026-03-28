@@ -1,6 +1,8 @@
 import 'dotenv/config';
 import express from 'express';
 import cookieParser from 'cookie-parser';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { config } from './config/defaults.js';
 import { SwarmManager } from './core/swarm-manager.js';
 import { createApiRouter } from './routes/api.js';
@@ -12,6 +14,10 @@ import { logger } from './utils/logger.js';
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+app.use('/media', express.static(path.resolve(__dirname, '../public/media')));
 
 // Initialize swarm manager
 const swarmManager = new SwarmManager();

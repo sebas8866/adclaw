@@ -1,285 +1,355 @@
 import { pageWrapper } from './shared.js';
 
-export function homePage() {
+export function homePage({ isLoggedIn = false } = {}) {
   return pageWrapper({
     title: 'Autonomous AI Ad Agency',
     activeNav: 'home',
-    publicNav: true,
+    publicNav: !isLoggedIn,
     body: `
   <style>
-    .home-hero {
-      padding-top: 120px;
-      padding-bottom: 0;
+    #mouse-particles {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 5;
     }
-    .home-hero-inner { max-width: 720px; }
-    .home-hero-accent { color: var(--primary); }
-
-    .home-stats {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 0;
-      margin-top: 72px;
-      border: 1px solid var(--border);
-      border-radius: var(--r-lg);
-      overflow: hidden;
-      background: var(--bg-surface);
+    .hero {
+      padding: 128px 0 44px;
+      position: relative;
     }
-    .home-stat {
-      padding: 32px 28px;
-      border-right: 1px solid var(--border);
-    }
-    .home-stat:last-child { border-right: none; }
-    .home-stat-value {
-      font-family: var(--font-mono);
-      font-size: clamp(32px, 4vw, 44px);
-      font-weight: 700;
-      letter-spacing: -0.03em;
-      color: var(--text);
-    }
-    .home-stat-label {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      margin-top: 8px;
-    }
-    @media (max-width: 768px) {
-      .home-stats { grid-template-columns: 1fr; }
-      .home-stat { border-right: none; border-bottom: 1px solid var(--border); }
-      .home-stat:last-child { border-bottom: none; }
-    }
-
-    .home-section--surface { background: var(--bg-surface); }
-
-    .home-steps {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-      margin-top: 48px;
-    }
-    @media (max-width: 900px) { .home-steps { grid-template-columns: 1fr; } }
-
-    .home-step-num {
-      font-family: var(--font-mono);
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--text-muted);
-      letter-spacing: 0.02em;
-      margin-bottom: 16px;
-    }
-
-    .home-agent-feature {
+    .hero-wrap {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      margin-top: 48px;
-      border-radius: var(--r-xl);
-      overflow: hidden;
-      border: 1px solid var(--border);
-      background: var(--bg-surface);
-    }
-    .home-agent-feature-info { padding: 40px 36px; }
-    .home-agent-feature-code {
-      background: var(--bg);
-      padding: 36px 32px;
-      font-family: var(--font-mono);
-      font-size: 12px;
-      line-height: 1.9;
-      color: var(--text-secondary);
-      border-left: 1px solid var(--border);
-      display: flex;
+      gap: 32px;
       align-items: center;
     }
-    @media (max-width: 768px) {
-      .home-agent-feature { grid-template-columns: 1fr; }
-      .home-agent-feature-code { border-left: none; border-top: 1px solid var(--border); }
-    }
-
-    .home-agent-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-      margin-top: 16px;
-    }
-    @media (max-width: 900px) { .home-agent-grid { grid-template-columns: repeat(2, 1fr); } }
-    @media (max-width: 600px) { .home-agent-grid { grid-template-columns: 1fr; } }
-
-    .home-agent-card-tag {
-      font-family: var(--font-mono);
-      font-size: 10px;
-      font-weight: 600;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      margin-bottom: 10px;
-    }
-
-    .home-intel-card {
-      position: relative;
-      padding-top: 4px;
-    }
-    .home-intel-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 2px;
-      border-radius: var(--r-lg) var(--r-lg) 0 0;
-    }
-    .home-intel-local::before { background: var(--green); }
-    .home-intel-kimi::before { background: var(--blue); }
-    .home-intel-opus::before { background: var(--amber); }
-
-    .home-intel-freq {
-      font-family: var(--font-mono);
-      font-size: 10px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      margin-bottom: 12px;
-    }
-    .home-intel-local .home-intel-freq { color: var(--green); }
-    .home-intel-kimi .home-intel-freq { color: var(--blue); }
-    .home-intel-opus .home-intel-freq { color: var(--amber); }
-
-    .home-intel-model {
+    .hero-copy p { max-width: 620px; }
+    .hero-subtle {
       font-family: var(--font-mono);
       font-size: 11px;
-      color: var(--text-muted);
-      margin-top: 20px;
-      padding-top: 16px;
-      border-top: 1px solid var(--border);
-    }
-
-    .home-pricing-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-      margin-top: 48px;
-      align-items: stretch;
-    }
-    @media (max-width: 900px) { .home-pricing-grid { grid-template-columns: 1fr; } }
-
-    .home-price-card { display: flex; flex-direction: column; height: 100%; }
-    .home-price-card--featured {
-      border-color: var(--border-hover);
-      box-shadow: 0 1px 0 var(--primary) inset;
-      background: var(--bg-elevated);
-    }
-    .home-price-tier {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      font-weight: 600;
+      letter-spacing: 0.09em;
       text-transform: uppercase;
-      letter-spacing: 0.04em;
       color: var(--text-muted);
+      margin-bottom: 18px;
     }
-    .home-price-card--featured .home-price-tier { color: var(--primary); }
-    .home-price-amount {
-      font-family: var(--font-display);
-      font-size: clamp(40px, 5vw, 52px);
-      font-weight: 800;
-      letter-spacing: -0.03em;
-      margin-top: 8px;
-      line-height: 1;
-    }
-    .home-price-amount span {
-      font-size: 15px;
-      font-weight: 500;
-      color: var(--text-muted);
-      letter-spacing: 0;
-      font-family: var(--font-body);
-    }
-    .home-price-desc { font-size: 13px; color: var(--text-muted); margin-top: 6px; }
-    .home-price-features {
-      margin-top: 28px;
-      padding-top: 24px;
-      border-top: 1px solid var(--border);
-      font-size: 14px;
-      color: var(--text-secondary);
-      line-height: 2.2;
-      flex: 1;
-    }
-    .home-price-features li {
-      list-style: none;
+    .hero-title { max-width: 700px; }
+    .hero-title .accent { color: #a5ceff; }
+    .hero-cta { margin-top: 30px; display: flex; gap: 12px; flex-wrap: wrap; }
+    .hero-proof {
+      margin-top: 22px;
       display: flex;
       align-items: center;
       gap: 10px;
+      font-size: 13px;
+      color: var(--text-muted);
     }
-    .home-price-features li::before {
-      content: '';
-      width: 5px;
-      height: 5px;
-      border-radius: 50%;
-      background: var(--primary);
-      flex-shrink: 0;
+    .hero-proof .dot-mini {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: #78b6ff;
     }
-    .home-price-actions { margin-top: 28px; }
-    .home-price-actions .btn { width: 100%; justify-content: center; }
+    .hero-metrics {
+      padding: 18px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-top: 26px;
+    }
+    .hero-metric {
+      background: rgba(108, 173, 255, 0.08);
+      border: 1px solid rgba(130, 172, 255, 0.24);
+      border-radius: 14px;
+      padding: 16px 14px;
+    }
+    .hero-metric .val {
+      font-family: var(--font-mono);
+      font-size: 24px;
+      font-weight: 600;
+      color: #dbe8ff;
+    }
+    .hero-metric .lab {
+      margin-top: 6px;
+      color: var(--text-muted);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      font-family: var(--font-mono);
+    }
+    .hero-video {
+      border: 1px solid rgba(128, 170, 255, 0.24);
+      border-radius: 20px;
+      overflow: hidden;
+      background: rgba(7, 11, 22, 0.92);
+      width: 100%;
+      max-width: min(100%, 780px);
+      aspect-ratio: 16 / 10;
+      justify-self: center;
+      align-self: center;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 20px 50px rgba(6, 10, 20, 0.4);
+      cursor: pointer;
+      user-select: none;
+    }
+    .hero-video video {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      background: rgba(3, 6, 14, 0.92);
+      cursor: pointer;
+    }
+    .logo-strip {
+      margin-top: 24px;
+      border-top: 1px solid rgba(134, 173, 255, 0.16);
+      border-bottom: 1px solid rgba(134, 173, 255, 0.16);
+      padding: 12px 0;
+      display: flex;
+      gap: 26px;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    .logo-strip span {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
 
-    .home-cta-inner {
+    .band {
+      background: rgba(11, 17, 32, 0.66);
+      border-top: 1px solid rgba(130, 171, 255, 0.18);
+      border-bottom: 1px solid rgba(130, 171, 255, 0.18);
+    }
+
+    .build-grid {
+      margin-top: 42px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+    .build-item .tag {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #b7d5ff;
+    }
+    .build-item h3 {
+      margin-top: 12px;
+      font-family: var(--font-display);
+      font-size: 30px;
+      line-height: 1.06;
+      letter-spacing: -0.04em;
+      font-weight: 900;
+      color: #eef5ff;
+    }
+    .build-item p {
+      margin-top: 10px;
+      color: var(--text-secondary);
+      font-size: 15px;
+      line-height: 1.7;
       max-width: 560px;
+    }
+    .process {
+      margin-top: 42px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+    .process .num {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: #a6c8ff;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 10px;
+    }
+
+    .feature-grid { margin-top: 42px; }
+    .feature-card .mini {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+
+    .pricing-grid {
+      margin-top: 42px;
+      max-width: 640px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .price-card { display: flex; flex-direction: column; min-height: 100%; }
+    .price-card.featured {
+      border-color: rgba(143, 182, 255, 0.44);
+      background: linear-gradient(180deg, rgba(18, 30, 58, 0.92), rgba(14, 22, 43, 0.92));
+    }
+    .price-tier {
+      color: #bdd8ff;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-size: 11px;
+      font-family: var(--font-mono);
+    }
+    .price-amount {
+      margin-top: 8px;
+      font-family: var(--font-display);
+      font-size: 44px;
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: -0.03em;
+    }
+    .price-amount span {
+      font-size: 14px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+    .price-points {
+      margin-top: 24px;
+      padding-top: 18px;
+      border-top: 1px solid rgba(134, 175, 255, 0.18);
+      flex: 1;
+    }
+    .price-points li {
+      list-style: none;
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-bottom: 12px;
+      display: flex;
+      gap: 8px;
+    }
+    .price-points li::before {
+      content: '•';
+      color: #9fc9ff;
+    }
+    .price-card .btn { margin-top: 12px; width: 100%; justify-content: center; }
+
+    .cta-block {
+      max-width: 760px;
       margin: 0 auto;
       text-align: center;
     }
+
+    @media (max-width: 980px) {
+      .hero-wrap { grid-template-columns: 1fr; align-items: start; gap: 28px; }
+      .hero-metrics { grid-template-columns: 1fr; }
+      .hero-video {
+        max-width: 100%;
+        justify-self: center;
+        align-self: center;
+        aspect-ratio: 16 / 9;
+      }
+      .build-grid { grid-template-columns: 1fr; }
+      .process { grid-template-columns: 1fr; }
+    }
   </style>
 
-  <section class="section home-hero">
+  <canvas id="mouse-particles"></canvas>
+
+  <section class="hero">
     <div class="container">
-      <div class="home-hero-inner">
-        <p class="label-tag reveal reveal-d1">Autonomous ad management</p>
-        <h1 class="text-hero reveal reveal-d2" style="margin-top: 20px;">
-          Your ads<br>run <span class="home-hero-accent">themselves.</span>
-        </h1>
-        <p class="text-body reveal reveal-d3" style="margin-top: 28px;">
-          Connect Meta &amp; Google Ads. Paste your business page. A dedicated AI agent swarm handles research, creatives, optimization, and reporting around the clock.
-        </p>
-        <div class="flex gap-2 reveal reveal-d4" style="margin-top: 36px; flex-wrap: wrap;">
-          <a href="/auth/signup" class="btn btn-primary btn-lg">Get started free</a>
-          <a href="#how" class="btn btn-secondary btn-lg">How it works</a>
+      <div class="hero-wrap">
+        <div class="hero-copy reveal">
+          <div class="hero-subtle">Autonomous performance system</div>
+          <h1 class="text-hero hero-title">Launch, optimize, and scale ads with a <span class="accent">live AI operating layer</span>.</h1>
+          <p class="text-body" style="margin-top:20px;">AdClaw combines planning, creative, policy checks, and budget optimization into one continuous workflow. Connect your ad account once and let the swarm execute.</p>
+          <div class="hero-cta">
+            <a href="/contact" class="btn btn-primary btn-lg">Contact us</a>
+            <a href="#how" class="btn btn-secondary btn-lg">See workflow</a>
+          </div>
+          <div class="hero-proof">
+            <span class="dot-mini"></span>
+            Built for Meta Ads automation with account-level controls
+          </div>
+
+          <div class="card hero-metrics reveal reveal-d1">
+            <div class="hero-metric">
+              <div class="val" id="hero-swarms">0</div>
+              <div class="lab">Active swarms</div>
+            </div>
+            <div class="hero-metric">
+              <div class="val" id="hero-campaigns">0</div>
+              <div class="lab">Campaigns tracked</div>
+            </div>
+            <div class="hero-metric">
+              <div class="val" id="hero-uptime">--</div>
+              <div class="lab">System uptime</div>
+            </div>
+          </div>
         </div>
+        <div class="hero-video reveal reveal-d2" id="hero-video-wrap" title="Click to pause or play">
+          <video id="hero-video" autoplay muted loop playsinline preload="metadata">
+            <source src="/media/AdClawHomepage.mp4" type="video/mp4">
+          </video>
+        </div>
+
       </div>
 
-      <div class="home-stats reveal reveal-d5">
-        <div class="home-stat">
-          <div class="home-stat-value" id="hero-swarms">0</div>
-          <div class="home-stat-label">Active swarms</div>
-        </div>
-        <div class="home-stat">
-          <div class="home-stat-value" id="hero-campaigns">0</div>
-          <div class="home-stat-label">Campaigns</div>
-        </div>
-        <div class="home-stat">
-          <div class="home-stat-value" id="hero-uptime">--</div>
-          <div class="home-stat-label">Uptime</div>
-        </div>
+      <div class="logo-strip reveal reveal-d3">
+        <span>Framer-style hierarchy</span><span>Relume-style blocks</span><span>Vercel-grade minimal polish</span><span>Meta ads workflow</span><span>Autonomous execution</span>
       </div>
     </div>
   </section>
 
-  <section class="section home-section--surface" id="how">
+  <section class="section band" id="build-flow">
     <div class="container">
-      <p class="label-tag reveal">Process</p>
-      <h2 class="text-section reveal reveal-d1" style="margin-top: 16px; max-width: 520px;">
-        Three steps to autonomous ads.
-      </h2>
+      <p class="label-tag reveal">From connect to scale</p>
+      <h2 class="text-section reveal reveal-d1" style="margin-top:14px;max-width:760px;">Connect. Create. Optimize. Scale.</h2>
+      <p class="text-body reveal reveal-d2" style="margin-top:14px;max-width:680px;">A straightforward 4-step workflow from setup to continuous performance execution.</p>
 
-      <div class="home-steps">
+      <div class="build-grid">
+        <article class="card build-item reveal reveal-d2">
+          <div class="tag">Build 01</div>
+          <h3>Connect your account.</h3>
+          <p>Secure OAuth connection to Facebook and select the ad account you want us to run.</p>
+        </article>
+        <article class="card build-item reveal reveal-d3">
+          <div class="tag">Build 02</div>
+          <h3>Create strategy + creative.</h3>
+          <p>The system drafts campaign direction, hooks, and creative variants based on your setup.</p>
+        </article>
+        <article class="card build-item reveal reveal-d4">
+          <div class="tag">Build 03</div>
+          <h3>Optimize continuously.</h3>
+          <p>Campaigns are monitored and tuned as performance data updates across audiences, ads, and spend.</p>
+        </article>
+        <article class="card build-item reveal reveal-d5">
+          <div class="tag">Build 04</div>
+          <h3>Scale winners safely.</h3>
+          <p>Top performers get more budget while weak ad sets are reduced or paused—without blowing up account health.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section band" id="how">
+    <div class="container">
+      <p class="label-tag reveal">How It Works</p>
+      <h2 class="text-section reveal reveal-d1" style="margin-top:14px;max-width:670px;">A three-stage flow that moves from setup to full autonomous execution.</h2>
+      <div class="process">
         <article class="card reveal reveal-d2">
-          <div class="home-step-num">01</div>
-          <h3 class="text-headline" style="letter-spacing: -0.02em;">Connect</h3>
-          <p class="text-body" style="margin-top: 12px;">One-click OAuth for Meta Ads and Google Ads. Secure API access, nothing more.</p>
+          <div class="num">Step 01</div>
+          <h3 class="text-headline">Connect Accounts</h3>
+          <p class="text-body" style="margin-top:10px;">Sign in, connect Facebook, and select the exact ad account the swarm is allowed to touch.</p>
         </article>
         <article class="card reveal reveal-d3">
-          <div class="home-step-num">02</div>
-          <h3 class="text-headline" style="letter-spacing: -0.02em;">Launch</h3>
-          <p class="text-body" style="margin-top: 12px;">Paste your business page URL. The Research Agent analyzes your niche, audience, and competitors instantly.</p>
+          <div class="num">Step 02</div>
+          <h3 class="text-headline">Generate Strategy</h3>
+          <p class="text-body" style="margin-top:10px;">Research + creative agents map competitor angles and produce campaign-ready concepts.</p>
         </article>
         <article class="card reveal reveal-d4">
-          <div class="home-step-num">03</div>
-          <h3 class="text-headline" style="letter-spacing: -0.02em;">Scale</h3>
-          <p class="text-body" style="margin-top: 12px;">Six AI agents take over. Creatives, campaigns, optimization, reporting. Every day, automatically.</p>
+          <div class="num">Step 03</div>
+          <h3 class="text-headline">Operate Continuously</h3>
+          <p class="text-body" style="margin-top:10px;">The system checks health, optimizes spend, and reports outcomes without manual intervention.</p>
         </article>
       </div>
     </div>
@@ -287,166 +357,87 @@ export function homePage() {
 
   <section class="section">
     <div class="container">
-      <p class="label-tag reveal">Architecture</p>
-      <h2 class="text-section reveal reveal-d1" style="margin-top: 16px; max-width: 560px;">
-        Six agents working around the clock.
-      </h2>
-
-      <div class="home-agent-feature reveal reveal-d2">
-        <div class="home-agent-feature-info">
-          <div class="home-agent-card-tag">Core engine</div>
-          <h3 class="text-headline" style="font-size: 26px; font-weight: 700; letter-spacing: -0.02em; margin-top: 4px;">
-            Launch &amp; Optimize
-          </h3>
-          <p class="text-body" style="margin-top: 18px;">
-            Every 15 minutes, this agent checks your campaigns. Ads below 2.5x ROAS get paused. Winners get a 30% budget increase. No human intervention needed.
-          </p>
-        </div>
-        <div class="home-agent-feature-code">
-          <div>
-            <div style="color:var(--text-muted);">// every 15 minutes</div>
-            <div><span style="color:var(--primary);">if</span> (roas &lt; 2.5) <span style="color:var(--red);">pause</span>(adSet)</div>
-            <div><span style="color:var(--primary);">if</span> (roas &gt; 4.0) <span style="color:var(--text);">scale</span>(budget, +30%)</div>
-            <div style="color:var(--text-muted); margin-top:12px;">// daily</div>
-            <div><span style="color:var(--amber);">opus</span>.review(strategy)</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="home-agent-grid">
-        <article class="card reveal reveal-d1">
-          <div class="home-agent-card-tag">Agent 01</div>
-          <h3 class="text-headline" style="letter-spacing: -0.02em;">Research</h3>
-          <p class="text-body" style="margin-top: 10px;">Business analysis, competitor tracking, trending hooks. Hourly deep research via Kimi.</p>
+      <p class="label-tag reveal">System Modules</p>
+      <h2 class="text-section reveal reveal-d1" style="margin-top:14px;max-width:700px;">Modular agents that behave like a focused growth team.</h2>
+      <div class="grid-3 feature-grid">
+        <article class="card feature-card reveal reveal-d2">
+          <div class="mini">Module 01</div>
+          <h3 class="text-headline">Research Engine</h3>
+          <p class="text-body" style="margin-top:10px;">Finds market angles, ad hooks, and segment opportunities on an hourly cadence.</p>
         </article>
-        <article class="card reveal reveal-d2">
-          <div class="home-agent-card-tag">Agent 02</div>
-          <h3 class="text-headline" style="letter-spacing: -0.02em;">Creative</h3>
-          <p class="text-body" style="margin-top: 10px;">AI-generated ad copy and images. Multiple angles tested automatically per campaign.</p>
+        <article class="card feature-card reveal reveal-d3">
+          <div class="mini">Module 02</div>
+          <h3 class="text-headline">Creative Generator</h3>
+          <p class="text-body" style="margin-top:10px;">Builds copy direction and test variants based on campaign objective and account history.</p>
         </article>
-        <article class="card reveal reveal-d3">
-          <div class="home-agent-card-tag">Agent 03</div>
-          <h3 class="text-headline" style="letter-spacing: -0.02em;">Compliance</h3>
-          <p class="text-body" style="margin-top: 10px;">Every ad reviewed against Meta and Google policies before launch. Zero violations.</p>
+        <article class="card feature-card reveal reveal-d4">
+          <div class="mini">Module 03</div>
+          <h3 class="text-headline">Compliance Guard</h3>
+          <p class="text-body" style="margin-top:10px;">Checks risky claims and policy-sensitive language before ads go live.</p>
         </article>
-        <article class="card reveal reveal-d4">
-          <div class="home-agent-card-tag">Agent 04</div>
-          <h3 class="text-headline" style="letter-spacing: -0.02em;">Reporting</h3>
-          <p class="text-body" style="margin-top: 10px;">Daily performance summaries. Key metrics, actions taken, strategic recommendations.</p>
+        <article class="card feature-card reveal reveal-d5">
+          <div class="mini">Module 04</div>
+          <h3 class="text-headline">Launch Controller</h3>
+          <p class="text-body" style="margin-top:10px;">Handles publishing, pacing, and account-safe rollout logic.</p>
         </article>
-        <article class="card reveal reveal-d5">
-          <div class="home-agent-card-tag">Agent 05</div>
-          <h3 class="text-headline" style="letter-spacing: -0.02em;">AI Coach</h3>
-          <p class="text-body" style="margin-top: 10px;">Coming in v2. Your personal strategist for questions, recommendations, and insights.</p>
+        <article class="card feature-card reveal reveal-d6">
+          <div class="mini">Module 05</div>
+          <h3 class="text-headline">Optimization Loop</h3>
+          <p class="text-body" style="margin-top:10px;">Adjusts budget and pausing decisions based on ROAS and spend velocity.</p>
         </article>
-        <article class="card reveal reveal-d6">
-          <div class="home-agent-card-tag">Infrastructure</div>
-          <h3 class="text-headline" style="letter-spacing: -0.02em;">Mac Mini Fleet</h3>
-          <p class="text-body" style="margin-top: 10px;">Runs 24/7 on local hardware. Ollama for fast checks, Kimi for research, Opus for decisions.</p>
+        <article class="card feature-card reveal reveal-d7">
+          <div class="mini">Module 06</div>
+          <h3 class="text-headline">Reporting Layer</h3>
+          <p class="text-body" style="margin-top:10px;">Summarizes what changed, why it changed, and what to do next.</p>
         </article>
       </div>
     </div>
   </section>
 
-  <section class="section home-section--surface">
-    <div class="container">
-      <p class="label-tag reveal">Intelligence</p>
-      <h2 class="text-section reveal reveal-d1" style="margin-top: 16px; max-width: 520px;">
-        Three tiers. Right tool, right cadence.
-      </h2>
-
-      <div class="grid-3" style="margin-top: 48px;">
-        <article class="card home-intel-card home-intel-local reveal reveal-d2">
-          <div class="home-intel-freq">Every 15 min</div>
-          <h3 class="text-headline" style="font-size: 22px; letter-spacing: -0.02em;">Local Ollama</h3>
-          <p class="text-body" style="margin-top: 12px;">Fast metric parsing and anomaly detection. Runs on your Mac Mini. Zero API cost.</p>
-          <div class="home-intel-model">llama3.2:3b</div>
-        </article>
-        <article class="card home-intel-card home-intel-kimi reveal reveal-d3">
-          <div class="home-intel-freq">Hourly</div>
-          <h3 class="text-headline" style="font-size: 22px; letter-spacing: -0.02em;">Kimi Deep Research</h3>
-          <p class="text-body" style="margin-top: 12px;">Competitor analysis, trending hooks, seasonal opportunities. Web-enabled deep research.</p>
-          <div class="home-intel-model">moonshot-v1-128k</div>
-        </article>
-        <article class="card home-intel-card home-intel-opus reveal reveal-d4">
-          <div class="home-intel-freq">Daily</div>
-          <h3 class="text-headline" style="font-size: 22px; letter-spacing: -0.02em;">Claude Opus</h3>
-          <p class="text-body" style="margin-top: 12px;">Critical budget allocation and strategy decisions. The strategic brain of your ad agency.</p>
-          <div class="home-intel-model">claude-opus-4-6</div>
-        </article>
-      </div>
-    </div>
-  </section>
-
-  <section class="section" id="pricing">
+  <section class="section band" id="pricing">
     <div class="container">
       <p class="label-tag reveal">Pricing</p>
-      <h2 class="text-section reveal reveal-d1" style="margin-top: 16px; max-width: 480px;">
-        Start free. Scale when ready.
-      </h2>
-
-      <div class="home-pricing-grid">
-        <article class="card home-price-card reveal reveal-d2">
-          <div class="home-price-tier">Starter</div>
-          <div class="home-price-amount">$0</div>
-          <div class="home-price-desc">Free during beta</div>
-          <ul class="home-price-features">
-            <li>1 business</li>
-            <li>All 6 agents</li>
-            <li>Basic reporting</li>
-            <li>Email support</li>
+      <h2 class="text-section reveal reveal-d1" style="margin-top:14px;max-width:620px;">Enterprise only — we onboard teams directly.</h2>
+      <p class="text-body reveal reveal-d1" style="margin-top:12px;max-width:560px;">AdClaw is sold as a single enterprise subscription. There is no self-serve free tier or public price list. Tell us about your ad accounts and workflow; we’ll scope deployment and support.</p>
+      <div class="pricing-grid">
+        <article class="card price-card featured reveal reveal-d2">
+          <div class="price-tier">Enterprise</div>
+          <div class="price-amount">Custom <span>pricing</span></div>
+          <p class="text-small" style="margin-top:6px;">Everything you need to run autonomous Meta ads at scale</p>
+          <ul class="price-points">
+            <li>Dedicated onboarding and account configuration</li>
+            <li>Multi–ad-account coverage and governance</li>
+            <li>Optimization, reporting, and priority support</li>
+            <li>Optional integrations and rollout aligned to your team</li>
           </ul>
-          <div class="home-price-actions">
-            <a href="/auth/signup" class="btn btn-ghost">Get started</a>
-          </div>
-        </article>
-
-        <article class="card home-price-card home-price-card--featured reveal reveal-d3">
-          <div class="home-price-tier">Growth</div>
-          <div class="home-price-amount">$97<span>/mo</span></div>
-          <div class="home-price-desc">Per business managed</div>
-          <ul class="home-price-features">
-            <li>Up to 5 businesses</li>
-            <li>Advanced reporting</li>
-            <li>Priority support</li>
-            <li>Custom creatives</li>
-            <li>Daily Opus reviews</li>
-          </ul>
-          <div class="home-price-actions">
-            <a href="/auth/signup" class="btn btn-primary">Start free trial</a>
-          </div>
-        </article>
-
-        <article class="card home-price-card reveal reveal-d4">
-          <div class="home-price-tier">Agency</div>
-          <div class="home-price-amount">$497<span>/mo</span></div>
-          <div class="home-price-desc">Unlimited scale</div>
-          <ul class="home-price-features">
-            <li>Up to 25 businesses</li>
-            <li>White-label dashboard</li>
-            <li>API access</li>
-            <li>Dedicated support</li>
-            <li>Custom agent tuning</li>
-          </ul>
-          <div class="home-price-actions">
-            <a href="/auth/signup" class="btn btn-ghost">Contact sales</a>
-          </div>
+          <a href="/contact" class="btn btn-primary">Contact us</a>
         </article>
       </div>
     </div>
   </section>
 
-  <section class="section home-section--surface">
-    <div class="container home-cta-inner">
-      <h2 class="text-section reveal">Ready to automate?</h2>
-      <p class="text-body reveal reveal-d1" style="margin-top: 20px; font-weight: 400;">
-        Set up takes under five minutes. Your swarm starts optimizing immediately.
-      </p>
-      <div class="reveal reveal-d2" style="margin-top: 36px;">
-        <a href="/auth/signup" class="btn btn-primary btn-lg">Get started free</a>
+  <section class="section">
+    <div class="container">
+      <div class="card cta-block reveal">
+        <h2 class="text-section">Replace manual media buying with a system that runs itself.</h2>
+        <p class="text-body" style="margin-top:16px;">Enterprise customers get hands-on onboarding: connect Facebook, scope accounts, and launch with our team. Reach out to get started.</p>
+        <div style="margin-top:28px;">
+          <a href="/contact" class="btn btn-primary btn-lg">Contact us</a>
+        </div>
       </div>
     </div>
   </section>
+
+  <footer style="border-top:1px solid var(--border);padding:32px 0;margin-top:0;">
+    <div class="container" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;">
+      <span style="font-size:13px;color:var(--text-dim);">&copy; 2026 AdClaw. All rights reserved.</span>
+      <div style="display:flex;gap:20px;font-size:13px;">
+        <a href="/privacy" style="color:var(--text-dim);text-decoration:none;">Privacy Policy</a>
+        <a href="/terms" style="color:var(--text-dim);text-decoration:none;">Terms of Service</a>
+        <a href="/data-deletion" style="color:var(--text-dim);text-decoration:none;">Data Deletion</a>
+      </div>
+    </div>
+  </footer>
 `,
     scripts: `
   <script>
@@ -463,6 +454,65 @@ export function homePage() {
         document.getElementById('hero-uptime').textContent = hrs > 0 ? hrs + 'h' : mins + 'm';
       } catch(e) {}
     })();
+
+    (function initHeroVideoToggle() {
+      var wrap = document.getElementById('hero-video-wrap');
+      var vid = document.getElementById('hero-video');
+      if (!wrap || !vid) return;
+      wrap.addEventListener('click', function() {
+        if (vid.paused) vid.play();
+        else vid.pause();
+      });
+    })();
+
+    (function initMouseParticles() {
+      var canvas = document.getElementById('mouse-particles');
+      if (!canvas) return;
+      var ctx = canvas.getContext('2d');
+      var particles = [];
+
+      function resize() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      }
+      resize();
+      window.addEventListener('resize', resize);
+
+      window.addEventListener('mousemove', function(e) {
+        for (var i = 0; i < 2; i++) {
+          particles.push({
+            x: e.clientX + (Math.random() - 0.5) * 6,
+            y: e.clientY + (Math.random() - 0.5) * 6,
+            vx: (Math.random() - 0.5) * 0.7,
+            vy: (Math.random() - 0.5) * 0.7,
+            life: 1,
+            r: Math.random() * 1.5 + 0.6
+          });
+        }
+        if (particles.length > 110) particles.splice(0, particles.length - 110);
+      });
+
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        for (var i = particles.length - 1; i >= 0; i--) {
+          var p = particles[i];
+          p.x += p.vx;
+          p.y += p.vy;
+          p.life -= 0.02;
+          if (p.life <= 0) {
+            particles.splice(i, 1);
+            continue;
+          }
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(148, 197, 255,' + (p.life * 0.42).toFixed(3) + ')';
+          ctx.fill();
+        }
+        requestAnimationFrame(draw);
+      }
+      draw();
+    })();
+
   </script>
 `
   });

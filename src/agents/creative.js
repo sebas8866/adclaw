@@ -20,10 +20,25 @@ export class CreativeAgent extends BaseAgent {
       const niche = insights?.niche || 'general product';
       const angles = insights?.suggestedAdAngles || ['benefit-driven', 'problem-solution', 'social-proof'];
       const audience = insights?.targetAudience || {};
+      const brief = this.state.creativeBrief || {};
+      const offer = brief.offer || 'special offer';
+      const product = brief.productName || niche;
+      const goal = brief.goal || 'purchase';
+      const tone = brief.tone || 'clear, direct, conversion-focused';
+      const usp = brief.usp || '';
+      const painPoint = brief.painPoint || '';
+      const landingPage = brief.landingPage || this.swarm.businessPageUrl;
 
       // Step 1: Generate ad copy variations via local LLM
       const copyPrompt = `Create ${config.creative.maxVariations} Facebook/Instagram ad copy variations for:
 Niche: ${niche}
+Product/Service: ${product}
+Offer: ${offer}
+Goal: ${goal}
+Tone: ${tone}
+Unique value proposition: ${usp || 'not specified'}
+Core pain point: ${painPoint || 'not specified'}
+Landing page: ${landingPage}
 Target audience: ${JSON.stringify(audience)}
 Ad angles to use: ${angles.join(', ')}
 
@@ -61,7 +76,14 @@ For each variation return JSON:
       // Step 2: Generate images via Nano Banana Pro
       const creatives = [];
       for (const copy of copies) {
-        const imagePrompt = `Professional ${niche} advertisement, ${copy.angle} style, clean modern design, product showcase, high quality marketing photo`;
+        const imagePrompt = [
+          `Professional high-converting ad creative for ${product}.`,
+          `Offer: ${offer}.`,
+          `Ad angle: ${copy.angle}.`,
+          usp ? `Unique value proposition: ${usp}.` : '',
+          painPoint ? `Pain point addressed: ${painPoint}.` : '',
+          `Style: ${tone}, modern, clean, premium lighting, no text overlay.`
+        ].filter(Boolean).join(' ');
 
         try {
           const image = await generateImage({
