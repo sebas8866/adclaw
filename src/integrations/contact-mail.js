@@ -1,3 +1,8 @@
+/**
+ * Contact delivery via Resend HTTP API. With unverified domains, Resend only
+ * allows onboarding@resend.dev → account owner; after adclaw.ai verifies,
+ * set CONTACT_FROM_EMAIL to e.g. AdClaw <support@adclaw.ai> on Vercel.
+ */
 import { logger } from '../utils/logger.js';
 
 const DEFAULT_TO = 'support@adclaw.ai';

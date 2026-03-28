@@ -9,7 +9,13 @@
     "dev": "node --watch src/index.js",
     "dashboard": "node src/dashboard/server.js",
     "test": "node --test test/**/*.test.js",
-    "supabase:sync-auth-urls": "node scripts/sync-supabase-auth-redirects.mjs"
+    "supabase:sync-auth-urls": "node scripts/sync-supabase-auth-redirects.mjs",
+    "resend:doctor": "node --env-file=.env ./node_modules/resend-cli/dist/cli.cjs doctor",
+    "resend:domains": "node --env-file=.env ./node_modules/resend-cli/dist/cli.cjs domains list",
+    "resend:domain-status": "node scripts/resend-domain-status.mjs",
+    "resend:verify-domain": "node scripts/resend-verify-domain.mjs",
+    "resend:test-email": "node scripts/resend-test-email.mjs",
+    "resend:login": "node --env-file=.env ./node_modules/resend-cli/dist/cli.cjs login"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.100.1",
@@ -29,7 +35,8 @@
     "ws": "^8.18.0"
   },
   "devDependencies": {
-    "nodemon": "^3.1.4"
+    "nodemon": "^3.1.4",
+    "resend-cli": "^1.7.1"
   },
   "engines": {
     "node": ">=20.0.0"
