@@ -1,8 +1,12 @@
 import { pageWrapper } from './shared.js';
 
 const COMPANY = 'AdClaw';
-const DOMAIN = 'adclaw-ruddy.vercel.app';
-const CONTACT_EMAIL = 'support@adclaw.ai';
+/** Public hostname — production is the Vercel deployment until a custom domain is attached. */
+export const SITE_HOST = 'adclaw-ruddy.vercel.app';
+export const SITE_ORIGIN = 'https://adclaw-ruddy.vercel.app';
+export const CONTACT_EMAIL = 'support@adclaw.ai';
+
+const DOMAIN = SITE_HOST;
 const EFFECTIVE_DATE = 'March 27, 2026';
 
 function legalStyles() {

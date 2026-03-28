@@ -29,7 +29,7 @@ const args = [
   '--subject',
   'AdClaw — Resend test',
   '--text',
-  'Resend CLI test from AdClaw. After adclaw.ai is verified, set CONTACT_FROM_EMAIL to support@adclaw.ai on Vercel.',
+  'Resend CLI test from AdClaw. After you add a custom domain in Vercel and verify it in Resend, set CONTACT_FROM_EMAIL on Vercel.',
 ];
 
 const r = spawnSync(process.execPath, args, {

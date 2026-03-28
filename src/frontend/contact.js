@@ -1,4 +1,5 @@
 import { pageWrapper } from './shared.js';
+import { SITE_HOST, SITE_ORIGIN, CONTACT_EMAIL } from './legal.js';
 
 export function contactPage({ isLoggedIn = false } = {}) {
   return pageWrapper({
@@ -96,7 +97,7 @@ export function contactPage({ isLoggedIn = false } = {}) {
         <button type="submit" id="btn-contact" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:8px;">Send message</button>
       </form>
     </div>
-    <p class="contact-foot">You can also email us directly at <a href="mailto:support@adclaw.ai">support@adclaw.ai</a>.</p>
+    <p class="contact-foot">The live app is on Vercel at <a href="${SITE_ORIGIN}">${SITE_HOST}</a>. Use this form for inquiries — we also monitor <a href="mailto:${CONTACT_EMAIL}">${CONTACT_EMAIL}</a>.</p>
   </div>
 `,
     scripts: `
