@@ -1,31 +1,62 @@
 import { pageWrapper, SUPABASE_URL, SUPABASE_ANON_KEY } from './shared.js';
 
-function authShell({ title, subtitle, ctaText, ctaHref, ctaLinkText, submitId, submitText, formHtml, rightTitle, rightCopy, statsHtml, error, submitHandler }) {
+function authShell({
+  title,
+  subtitle,
+  ctaText,
+  ctaHref,
+  ctaLinkText,
+  submitId,
+  submitText,
+  formHtml,
+  rightTitle,
+  rightCopy,
+  statsHtml,
+  error,
+  submitHandler,
+  kicker = '',
+  footNoteHtml = '',
+}) {
   return `
   <style>
     .auth-shell {
       min-height: 100vh;
       display: grid;
       grid-template-columns: 1fr 1fr;
-      background: radial-gradient(900px 500px at 8% -10%, rgba(108,173,255,0.16), transparent 55%), var(--bg);
+      background:
+        radial-gradient(ellipse 80% 50% at 0% 0%, rgba(98, 157, 255, 0.14), transparent 50%),
+        radial-gradient(ellipse 60% 40% at 100% 100%, rgba(121, 95, 255, 0.08), transparent 45%),
+        var(--bg);
     }
     .auth-left {
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 46px 28px;
+      padding: 48px 28px 64px;
     }
     .auth-right {
-      border-left: 1px solid rgba(124, 162, 255, 0.2);
-      background: linear-gradient(180deg, rgba(12, 18, 36, 0.95), rgba(8, 12, 23, 0.95));
+      position: relative;
+      border-left: 1px solid rgba(124, 162, 255, 0.14);
+      background: linear-gradient(165deg, rgba(14, 22, 42, 0.98) 0%, rgba(6, 10, 20, 0.99) 100%);
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 48px;
+      padding: 48px 40px;
+      overflow: hidden;
+    }
+    .auth-right-glow {
+      position: absolute;
+      width: 420px;
+      height: 420px;
+      right: -120px;
+      top: 10%;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(108, 173, 255, 0.12) 0%, transparent 70%);
+      pointer-events: none;
     }
     .auth-panel {
       width: 100%;
-      max-width: 430px;
+      max-width: 420px;
     }
     .auth-brand {
       font-family: var(--font-display);
@@ -34,23 +65,44 @@ function authShell({ title, subtitle, ctaText, ctaHref, ctaLinkText, submitId, s
       display: inline-flex;
       gap: 8px;
       align-items: center;
-      margin-bottom: 24px;
+      margin-bottom: 10px;
       color: #dce9ff;
     }
-    .auth-brand svg { width: 18px; height: 18px; }
+    .auth-brand svg { width: 20px; height: 20px; }
+    .auth-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-dim);
+      margin-bottom: 22px;
+      transition: color 0.2s;
+    }
+    .auth-back:hover { color: var(--text-secondary); }
     .auth-card {
-      border: 1px solid rgba(127, 166, 255, 0.24);
-      background: rgba(12, 19, 36, 0.9);
-      border-radius: 20px;
-      padding: 26px;
+      border: 1px solid rgba(127, 166, 255, 0.22);
+      background: rgba(10, 16, 30, 0.92);
+      border-radius: 22px;
+      padding: 28px 28px 26px;
+      box-shadow: 0 24px 48px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(255,255,255,0.03) inset;
+    }
+    .auth-kicker {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--primary);
+      margin-bottom: 10px;
     }
     .auth-title {
       font-family: var(--font-display);
-      font-size: 32px;
+      font-size: clamp(26px, 4vw, 32px);
       font-weight: 800;
-      letter-spacing: -0.03em;
+      letter-spacing: -0.035em;
+      line-height: 1.15;
     }
-    .auth-sub { margin-top: 8px; font-size: 14px; color: var(--text-muted); }
+    .auth-sub { margin-top: 10px; font-size: 14px; line-height: 1.55; color: var(--text-secondary); }
     .auth-error {
       margin-top: 16px;
       border-radius: 12px;
@@ -61,7 +113,74 @@ function authShell({ title, subtitle, ctaText, ctaHref, ctaLinkText, submitId, s
       padding: 10px 12px;
     }
     .auth-form { margin-top: 22px; }
-    .auth-form .form-input { background: rgba(8, 13, 24, 0.9); }
+    .auth-form .form-input {
+      background: rgba(6, 10, 20, 0.85);
+      border-color: rgba(124, 162, 255, 0.2);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .auth-form .form-input:focus {
+      outline: none;
+      border-color: rgba(108, 173, 255, 0.55);
+      box-shadow: 0 0 0 3px rgba(108, 173, 255, 0.12);
+    }
+    .auth-form label {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      color: var(--text-secondary);
+    }
+    .auth-field-wrap {
+      position: relative;
+    }
+    .auth-field-wrap .form-input { padding-right: 88px; }
+    .auth-pass-toggle {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      border: none;
+      background: rgba(108, 173, 255, 0.1);
+      color: #b8d4ff;
+      font-size: 11px;
+      font-weight: 600;
+      font-family: var(--font-mono);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 6px 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+    .auth-pass-toggle:hover {
+      background: rgba(108, 173, 255, 0.18);
+      color: #fff;
+    }
+    .auth-helper {
+      margin-top: 6px;
+      font-size: 12px;
+      color: var(--text-dim);
+      line-height: 1.45;
+    }
+    .auth-trust {
+      margin-top: 18px;
+      padding-top: 18px;
+      border-top: 1px solid rgba(124, 162, 255, 0.12);
+      font-size: 12px;
+      color: var(--text-dim);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .auth-trust svg { flex-shrink: 0; opacity: 0.85; }
+    .auth-legal {
+      margin-top: 14px;
+      font-size: 12px;
+      line-height: 1.5;
+      color: var(--text-dim);
+      text-align: center;
+    }
+    .auth-legal a { color: #cbe0ff; font-weight: 600; }
+    .auth-legal a:hover { color: #fff; }
     .auth-foot {
       margin-top: 18px;
       text-align: center;
@@ -92,10 +211,10 @@ function authShell({ title, subtitle, ctaText, ctaHref, ctaLinkText, submitId, s
     .auth-right-title {
       margin-top: 16px;
       font-family: var(--font-display);
-      font-size: 34px;
+      font-size: clamp(26px, 3.5vw, 34px);
       font-weight: 800;
-      line-height: 1.06;
-      letter-spacing: -0.03em;
+      line-height: 1.08;
+      letter-spacing: -0.035em;
       color: #e8f2ff;
     }
     .auth-right-copy {
@@ -111,10 +230,15 @@ function authShell({ title, subtitle, ctaText, ctaHref, ctaLinkText, submitId, s
       gap: 12px;
     }
     .auth-stat {
-      border: 1px solid rgba(132, 173, 255, 0.24);
+      border: 1px solid rgba(132, 173, 255, 0.2);
       border-radius: 14px;
-      background: rgba(107, 170, 255, 0.08);
+      background: rgba(107, 170, 255, 0.06);
       padding: 14px;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .auth-stat:hover {
+      border-color: rgba(152, 188, 255, 0.35);
+      background: rgba(107, 170, 255, 0.1);
     }
     .auth-stat .v {
       font-family: var(--font-mono);
@@ -131,8 +255,13 @@ function authShell({ title, subtitle, ctaText, ctaHref, ctaLinkText, submitId, s
       font-family: var(--font-mono);
     }
     @media (max-width: 980px) {
-      .auth-shell { grid-template-columns: 1fr; }
-      .auth-right { border-left: none; border-top: 1px solid rgba(124,162,255,0.2); }
+      .auth-shell { grid-template-columns: 1fr; min-height: auto; }
+      .auth-left { padding-top: 32px; }
+      .auth-right {
+        border-left: none;
+        border-top: 1px solid rgba(124,162,255,0.14);
+        padding: 40px 28px 56px;
+      }
     }
   </style>
 
@@ -143,19 +272,27 @@ function authShell({ title, subtitle, ctaText, ctaHref, ctaLinkText, submitId, s
           <svg viewBox="0 0 24 24" fill="none"><path d="M13 3L4 14h7l-2 7 9-11h-7l2-7z" fill="#8ec0ff" stroke="#8ec0ff" stroke-width="1.5" stroke-linejoin="round"/></svg>
           AdClaw
         </a>
+        <a href="/" class="auth-back">← Back to home</a>
         <div class="auth-card">
+          ${kicker ? `<div class="auth-kicker">${kicker}</div>` : ''}
           <h1 class="auth-title">${title}</h1>
           <p class="auth-sub">${subtitle}</p>
           ${error ? `<div class="auth-error">${error}</div>` : ''}
           <form class="auth-form" onsubmit="${submitHandler}(event)">
             ${formHtml}
-            <button type="submit" id="${submitId}" class="btn btn-primary" style="width:100%;justify-content:center;">${submitText}</button>
+            <button type="submit" id="${submitId}" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:4px;">${submitText}</button>
           </form>
+          <div class="auth-trust" aria-hidden="true">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 2L4 6v6c0 5.55 3.84 10.74 8 12 4.16-1.26 8-6.45 8-12V6l-8-4z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+            <span>Session secured with Supabase Auth (encrypted in transit).</span>
+          </div>
           <div class="auth-foot">${ctaText} <a href="${ctaHref}">${ctaLinkText != null ? ctaLinkText : (ctaHref.includes('signup') ? 'Create one' : 'Sign in')}</a></div>
+          ${footNoteHtml}
         </div>
       </div>
     </div>
     <div class="auth-right">
+      <div class="auth-right-glow" aria-hidden="true"></div>
       <div class="auth-right-inner">
         <div class="auth-tag">Autonomous Ad Operations</div>
         <h2 class="auth-right-title">${rightTitle}</h2>
@@ -172,23 +309,28 @@ export function loginPage(error) {
     title: 'Sign in',
     noAuth: true,
     body: authShell({
+      kicker: 'Sign in',
       title: 'Welcome back',
-      subtitle: 'Sign in to resume your autonomous campaign workflows.',
-      ctaText: 'Need enterprise access?',
-      ctaHref: '/contact',
-      ctaLinkText: 'Contact us',
+      subtitle: 'Use your work email and password. Connect Meta from the dashboard after you sign in.',
+      ctaText: 'New here?',
+      ctaHref: '/auth/signup',
+      ctaLinkText: 'Create an account',
+      footNoteHtml: '<p class="auth-legal" style="margin-top:12px;padding-top:0;border-top:0">Need enterprise onboarding? <a href="/contact">Contact our team</a></p>',
       submitId: 'btn-login',
       submitText: 'Sign in',
       submitHandler: 'handleLogin',
       error,
       formHtml: `
         <div class="form-group">
-          <label>Email</label>
-          <input type="email" id="inp-email" class="form-input" placeholder="you@company.com" required>
+          <label for="inp-email">Work email</label>
+          <input type="email" id="inp-email" name="email" class="form-input" placeholder="you@company.com" required autocomplete="username" inputmode="email">
         </div>
         <div class="form-group">
-          <label>Password</label>
-          <input type="password" id="inp-pass" class="form-input" placeholder="Your password" required>
+          <label for="inp-pass">Password</label>
+          <div class="auth-field-wrap">
+            <input type="password" id="inp-pass" name="password" class="form-input" placeholder="••••••••" required autocomplete="current-password">
+            <button type="button" class="auth-pass-toggle" data-target="inp-pass" aria-label="Show password">Show</button>
+          </div>
         </div>
         <div class="auth-forgot-row"><a href="/auth/forgot-password">Forgot password?</a></div>
       `,
@@ -226,6 +368,19 @@ export function loginPage(error) {
         showToast(err.message || 'Login failed', 'error');
       }
     }
+    (function initPassToggle() {
+      document.querySelectorAll('.auth-pass-toggle').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var id = btn.getAttribute('data-target');
+          var inp = document.getElementById(id);
+          if (!inp) return;
+          var show = inp.type === 'password';
+          inp.type = show ? 'text' : 'password';
+          btn.textContent = show ? 'Hide' : 'Show';
+          btn.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
+        });
+      });
+    })();
   </script>
 `
   });
@@ -236,22 +391,32 @@ export function signupPage(error) {
     title: 'Create account',
     noAuth: true,
     body: authShell({
-      title: 'Create account',
-      subtitle: 'Enterprise onboarding. After we approve access, you can sign in here.',
+      kicker: 'Register',
+      title: 'Create your workspace',
+      subtitle: 'Enterprise onboarding. Use a strong password—you’ll connect Meta from the dashboard after you sign in.',
       ctaText: 'Already have an account?',
       ctaHref: '/auth/login',
       submitId: 'btn-signup',
       submitText: 'Create account',
       submitHandler: 'handleSignup',
       error,
+      footNoteHtml: '<div class="auth-legal">By creating an account, you agree to our <a href="/terms">Terms</a> and <a href="/privacy">Privacy Policy</a>.</div>',
       formHtml: `
         <div class="form-group">
-          <label>Email</label>
-          <input type="email" id="inp-email" class="form-input" placeholder="you@company.com" required>
+          <label for="inp-email">Work email</label>
+          <input type="email" id="inp-email" name="email" class="form-input" placeholder="you@company.com" required autocomplete="email" inputmode="email">
         </div>
         <div class="form-group">
-          <label>Password</label>
-          <input type="password" id="inp-pass" class="form-input" placeholder="Min. 6 characters" required minlength="6">
+          <label for="inp-pass">Password</label>
+          <div class="auth-field-wrap">
+            <input type="password" id="inp-pass" name="password" class="form-input" placeholder="At least 6 characters" required minlength="6" autocomplete="new-password">
+            <button type="button" class="auth-pass-toggle" data-target="inp-pass" aria-label="Show password">Show</button>
+          </div>
+          <p class="auth-helper">Minimum 6 characters. Same email signs you in across devices.</p>
+        </div>
+        <div class="form-group">
+          <label for="inp-pass2">Confirm password</label>
+          <input type="password" id="inp-pass2" name="password2" class="form-input" placeholder="Repeat password" required minlength="6" autocomplete="new-password">
         </div>
       `,
       rightTitle: 'Set up once. Let the system execute daily.',
@@ -271,10 +436,15 @@ export function signupPage(error) {
     async function handleSignup(e) {
       e.preventDefault();
       var btn = document.getElementById('btn-signup');
+      var pass = document.getElementById('inp-pass').value;
+      var pass2 = document.getElementById('inp-pass2').value;
+      if (pass !== pass2) {
+        showToast('Passwords do not match', 'error');
+        return;
+      }
       btn.disabled = true; btn.textContent = 'Creating account...';
 
       var email = document.getElementById('inp-email').value;
-      var pass = document.getElementById('inp-pass').value;
 
       try {
         var result = await sb.auth.signUp({ email: email, password: pass });
@@ -293,6 +463,19 @@ export function signupPage(error) {
         showToast(err.message || 'Signup failed', 'error');
       }
     }
+    (function initPassToggle() {
+      document.querySelectorAll('.auth-pass-toggle').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var id = btn.getAttribute('data-target');
+          var inp = document.getElementById(id);
+          if (!inp) return;
+          var show = inp.type === 'password';
+          inp.type = show ? 'text' : 'password';
+          btn.textContent = show ? 'Hide' : 'Show';
+          btn.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
+        });
+      });
+    })();
   </script>
 `
   });
@@ -303,8 +486,9 @@ export function forgotPasswordPage(error) {
     title: 'Reset password',
     noAuth: true,
     body: authShell({
+      kicker: 'Account',
       title: 'Forgot password',
-      subtitle: 'Enter your email and we will send a secure link to set a new password.',
+      subtitle: 'Enter your work email and we will send a secure link to set a new password.',
       ctaText: 'Remember your password?',
       ctaHref: '/auth/login',
       ctaLinkText: 'Sign in',
@@ -314,8 +498,8 @@ export function forgotPasswordPage(error) {
       error,
       formHtml: `
         <div class="form-group">
-          <label>Email</label>
-          <input type="email" id="inp-email" class="form-input" placeholder="you@company.com" required autocomplete="email">
+          <label for="inp-email">Work email</label>
+          <input type="email" id="inp-email" name="email" class="form-input" placeholder="you@company.com" required autocomplete="email" inputmode="email">
         </div>
       `,
       rightTitle: 'Account recovery, without the runaround.',
@@ -359,6 +543,7 @@ export function resetPasswordPage(error) {
     title: 'New password',
     noAuth: true,
     body: authShell({
+      kicker: 'Security',
       title: 'Set new password',
       subtitle: 'Choose a strong password for your AdClaw account.',
       ctaText: 'Need another link?',
