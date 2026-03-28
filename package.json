@@ -8,7 +8,8 @@
     "start": "node src/index.js",
     "dev": "node --watch src/index.js",
     "dashboard": "node src/dashboard/server.js",
-    "test": "node --test test/**/*.test.js"
+    "test": "node --test test/**/*.test.js",
+    "supabase:sync-auth-urls": "node scripts/sync-supabase-auth-redirects.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.100.1",
