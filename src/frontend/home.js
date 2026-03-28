@@ -263,7 +263,7 @@ export function homePage({ isLoggedIn = false } = {}) {
           <h1 class="text-hero hero-title">Launch, optimize, and scale ads with a <span class="accent">live AI operating layer</span>.</h1>
           <p class="text-body" style="margin-top:20px;">AdClaw combines planning, creative, policy checks, and budget optimization into one continuous workflow. Connect your ad account once and let the swarm execute.</p>
           <div class="hero-cta">
-            <a href="mailto:support@adclaw.ai?subject=AdClaw%20Enterprise%20inquiry" class="btn btn-primary btn-lg">Contact us</a>
+            <a href="/contact" class="btn btn-primary btn-lg">Contact us</a>
             <a href="#how" class="btn btn-secondary btn-lg">See workflow</a>
           </div>
           <div class="hero-proof">
@@ -410,7 +410,7 @@ export function homePage({ isLoggedIn = false } = {}) {
             <li>Optimization, reporting, and priority support</li>
             <li>Optional integrations and rollout aligned to your team</li>
           </ul>
-          <a href="mailto:support@adclaw.ai?subject=AdClaw%20Enterprise%20inquiry" class="btn btn-primary">Contact us</a>
+          <a href="/contact" class="btn btn-primary">Contact us</a>
         </article>
       </div>
     </div>
@@ -422,7 +422,7 @@ export function homePage({ isLoggedIn = false } = {}) {
         <h2 class="text-section">Replace manual media buying with a system that runs itself.</h2>
         <p class="text-body" style="margin-top:16px;">Enterprise customers get hands-on onboarding: connect Facebook, scope accounts, and launch with our team. Reach out to get started.</p>
         <div style="margin-top:28px;">
-          <a href="mailto:support@adclaw.ai?subject=AdClaw%20Enterprise%20inquiry" class="btn btn-primary btn-lg">Contact us</a>
+          <a href="/contact" class="btn btn-primary btn-lg">Contact us</a>
         </div>
       </div>
     </div>

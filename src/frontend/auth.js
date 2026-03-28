@@ -175,7 +175,7 @@ export function loginPage(error) {
       title: 'Welcome back',
       subtitle: 'Sign in to resume your autonomous campaign workflows.',
       ctaText: 'Need enterprise access?',
-      ctaHref: 'mailto:support@adclaw.ai?subject=AdClaw%20Enterprise%20inquiry',
+      ctaHref: '/contact',
       ctaLinkText: 'Contact us',
       submitId: 'btn-login',
       submitText: 'Sign in',

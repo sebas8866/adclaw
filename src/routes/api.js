@@ -2,6 +2,7 @@ import express from 'express';
 import os from 'os';
 import { metaAuthRoutes } from '../integrations/meta-oauth.js';
 import { handleWebhook } from '../integrations/stripe-billing.js';
+import { deliverContactInquiry } from '../integrations/contact-mail.js';
 import { logger } from '../utils/logger.js';
 
 export function createApiRouter(swarmManager) {
@@ -11,6 +12,46 @@ export function createApiRouter(swarmManager) {
 
   router.get('/health', (req, res) => {
     res.json({ status: 'ok', uptime: process.uptime(), timestamp: new Date() });
+  });
+
+  router.post('/contact', async (req, res) => {
+    try {
+      const { name, email, company, message, website } = req.body || {};
+
+      if (website) {
+        return res.json({ ok: true });
+      }
+
+      const cleanName = typeof name === 'string' ? name.trim() : '';
+      const cleanEmail = typeof email === 'string' ? email.trim() : '';
+      const cleanCompany = typeof company === 'string' ? company.trim() : '';
+      const cleanMessage = typeof message === 'string' ? message.trim() : '';
+
+      if (!cleanName || cleanName.length > 120) {
+        return res.status(400).json({ error: 'Please enter your name (max 120 characters).' });
+      }
+      if (!cleanEmail || cleanEmail.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
+        return res.status(400).json({ error: 'Please enter a valid email address.' });
+      }
+      if (cleanCompany.length > 200) {
+        return res.status(400).json({ error: 'Company name is too long.' });
+      }
+      if (!cleanMessage || cleanMessage.length > 8000) {
+        return res.status(400).json({ error: 'Please enter a message (max 8000 characters).' });
+      }
+
+      await deliverContactInquiry({
+        name: cleanName,
+        email: cleanEmail,
+        company: cleanCompany || undefined,
+        message: cleanMessage,
+      });
+
+      res.json({ ok: true });
+    } catch (err) {
+      logger.error('POST /contact', { message: err.message });
+      res.status(500).json({ error: err.message || 'Could not send message. Try again later.' });
+    }
   });
 
   router.get('/system', (req, res) => {

@@ -5,6 +5,7 @@ import { launchPage } from '../frontend/launch.js';
 import { swarmsPage, swarmDetailPage } from '../frontend/swarms.js';
 import { loginPage, signupPage, forgotPasswordPage, resetPasswordPage } from '../frontend/auth.js';
 import { privacyPage, termsPage, dataDeletionPage } from '../frontend/legal.js';
+import { contactPage } from '../frontend/contact.js';
 import { requireAuth } from '../auth/middleware.js';
 
 export function createFrontendRouter() {
@@ -47,6 +48,11 @@ export function createFrontendRouter() {
 
   router.get('/data-deletion', (req, res) => {
     res.type('html').send(dataDeletionPage());
+  });
+
+  router.get('/contact', (req, res) => {
+    const isLoggedIn = !!(req.cookies?.sb_access_token || req.cookies?.sb_refresh_token);
+    res.type('html').send(contactPage({ isLoggedIn }));
   });
 
   router.use(requireAuth);

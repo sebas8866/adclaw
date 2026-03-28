@@ -411,19 +411,21 @@ export function pageWrapper({ title, body, activeNav = '', scripts = '', noAuth 
     <div class="nav-links">
       ${publicNav ? `
       <a href="/"${activeNav === 'home' ? ' class="active"' : ''}>Home</a>
-      <a href="#how">How it works</a>
-      <a href="#pricing">Pricing</a>
+      <a href="/#how">How it works</a>
+      <a href="/#pricing">Pricing</a>
+      <a href="/contact"${activeNav === 'contact' ? ' class="active"' : ''}>Contact</a>
       ` : `
       <a href="/"${activeNav === 'home' ? ' class="active"' : ''}>Home</a>
       <a href="/app"${activeNav === 'app' ? ' class="active"' : ''}>Dashboard</a>
       <a href="/app/launch"${activeNav === 'launch' ? ' class="active"' : ''}>Launch</a>
       <a href="/app/swarms"${activeNav === 'swarms' ? ' class="active"' : ''}>Swarms</a>
+      <a href="/contact"${activeNav === 'contact' ? ' class="active"' : ''}>Contact</a>
       `}
     </div>
     <div class="nav-user">
       ${publicNav ? `
       <a href="/auth/login">Log in</a>
-      <a href="mailto:support@adclaw.ai?subject=AdClaw%20Enterprise%20inquiry" class="btn btn-primary btn-sm">Contact us</a>
+      <a href="/contact" class="btn btn-primary btn-sm">Contact us</a>
       ` : `
       <a href="/auth/logout">Sign out</a>
       `}
