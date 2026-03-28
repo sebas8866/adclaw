@@ -8,7 +8,15 @@ const supabaseAdmin = supabaseUrl && supabaseServiceKey
   ? createClient(supabaseUrl, supabaseServiceKey)
   : null;
 
-const PUBLIC_PATHS = ['/auth/login', '/auth/signup', '/auth/callback', '/auth/meta', '/api/health'];
+const PUBLIC_PATHS = [
+  '/auth/login',
+  '/auth/signup',
+  '/auth/forgot-password',
+  '/auth/reset-password',
+  '/auth/callback',
+  '/auth/meta',
+  '/api/health',
+];
 
 const COOKIE_OPTS = {
   httpOnly: true,

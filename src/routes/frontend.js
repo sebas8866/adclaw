@@ -3,7 +3,7 @@ import { homePage } from '../frontend/home.js';
 import { appDashboardPage } from '../frontend/app-dashboard.js';
 import { launchPage } from '../frontend/launch.js';
 import { swarmsPage, swarmDetailPage } from '../frontend/swarms.js';
-import { loginPage, signupPage } from '../frontend/auth.js';
+import { loginPage, signupPage, forgotPasswordPage, resetPasswordPage } from '../frontend/auth.js';
 import { privacyPage, termsPage, dataDeletionPage } from '../frontend/legal.js';
 import { requireAuth } from '../auth/middleware.js';
 
@@ -16,6 +16,14 @@ export function createFrontendRouter() {
 
   router.get('/auth/signup', (req, res) => {
     res.type('html').send(signupPage());
+  });
+
+  router.get('/auth/forgot-password', (req, res) => {
+    res.type('html').send(forgotPasswordPage());
+  });
+
+  router.get('/auth/reset-password', (req, res) => {
+    res.type('html').send(resetPasswordPage());
   });
 
   router.get('/auth/logout', (req, res) => {

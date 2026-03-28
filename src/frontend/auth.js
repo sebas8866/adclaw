@@ -70,6 +70,14 @@ function authShell({ title, subtitle, ctaText, ctaHref, ctaLinkText, submitId, s
     }
     .auth-foot a { color: #cbe0ff; font-weight: 600; }
     .auth-foot a:hover { color: #fff; }
+    .auth-forgot-row {
+      text-align: right;
+      margin-top: -6px;
+      margin-bottom: 14px;
+      font-size: 13px;
+    }
+    .auth-forgot-row a { color: #cbe0ff; font-weight: 600; }
+    .auth-forgot-row a:hover { color: #fff; }
     .auth-right-inner {
       width: 100%;
       max-width: 430px;
@@ -182,12 +190,13 @@ export function loginPage(error) {
           <label>Password</label>
           <input type="password" id="inp-pass" class="form-input" placeholder="Your password" required>
         </div>
+        <div class="auth-forgot-row"><a href="/auth/forgot-password">Forgot password?</a></div>
       `,
       rightTitle: 'Your ad accounts, run by a focused AI control layer.',
       rightCopy: 'Connect Facebook, select account access, and let the swarm monitor performance and adjust strategy continuously.',
       statsHtml: `
         <div class="auth-stat"><div class="v">6</div><div class="k">Live modules</div></div>
-        <div class="auth-stat"><div class="v">15m</div><div class="k">Optimization loop</div></div>
+        <div class="auth-stat"><div class="v">1h</div><div class="k">Optimization loop</div></div>
         <div class="auth-stat"><div class="v">24/7</div><div class="k">Runtime</div></div>
         <div class="auth-stat"><div class="v">ROAS</div><div class="k">Driven workflow</div></div>
       `,
@@ -286,5 +295,202 @@ export function signupPage(error) {
     }
   </script>
 `
+  });
+}
+
+export function forgotPasswordPage(error) {
+  return pageWrapper({
+    title: 'Reset password',
+    noAuth: true,
+    body: authShell({
+      title: 'Forgot password',
+      subtitle: 'Enter your email and we will send a secure link to set a new password.',
+      ctaText: 'Remember your password?',
+      ctaHref: '/auth/login',
+      ctaLinkText: 'Sign in',
+      submitId: 'btn-forgot',
+      submitText: 'Send reset link',
+      submitHandler: 'handleForgot',
+      error,
+      formHtml: `
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="inp-email" class="form-input" placeholder="you@company.com" required autocomplete="email">
+        </div>
+      `,
+      rightTitle: 'Account recovery, without the runaround.',
+      rightCopy: 'Links expire after a short time. If you do not see the email, check spam or request another link.',
+      statsHtml: `
+        <div class="auth-stat"><div class="v">SSL</div><div class="k">Email links</div></div>
+        <div class="auth-stat"><div class="v">1</div><div class="k">Enterprise plan</div></div>
+        <div class="auth-stat"><div class="v">Meta</div><div class="k">OAuth ready</div></div>
+        <div class="auth-stat"><div class="v">24/7</div><div class="k">Runtime</div></div>
+      `,
+    }),
+    scripts: `
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script>
+    var sb = supabase.createClient('${SUPABASE_URL}', '${SUPABASE_ANON_KEY}');
+
+    async function handleForgot(e) {
+      e.preventDefault();
+      var btn = document.getElementById('btn-forgot');
+      btn.disabled = true; btn.textContent = 'Sending…';
+
+      var email = document.getElementById('inp-email').value.trim();
+      try {
+        var redirectTo = window.location.origin + '/auth/reset-password';
+        var result = await sb.auth.resetPasswordForEmail(email, { redirectTo: redirectTo });
+        if (result.error) throw result.error;
+        showToast('If that email is on file, we sent a reset link. Check your inbox.', 'success');
+        btn.disabled = false; btn.textContent = 'Send reset link';
+      } catch(err) {
+        btn.disabled = false; btn.textContent = 'Send reset link';
+        showToast(err.message || 'Request failed', 'error');
+      }
+    }
+  </script>
+`,
+  });
+}
+
+export function resetPasswordPage(error) {
+  return pageWrapper({
+    title: 'New password',
+    noAuth: true,
+    body: authShell({
+      title: 'Set new password',
+      subtitle: 'Choose a strong password for your AdClaw account.',
+      ctaText: 'Need another link?',
+      ctaHref: '/auth/forgot-password',
+      ctaLinkText: 'Request again',
+      submitId: 'btn-reset',
+      submitText: 'Update password',
+      submitHandler: 'handleResetPassword',
+      error,
+      formHtml: `
+        <p id="reset-wait" class="auth-sub" style="margin-top:0;">Verifying your reset link…</p>
+        <div id="reset-fields" style="display:none;">
+          <div class="form-group">
+            <label>New password</label>
+            <input type="password" id="inp-pass" class="form-input" placeholder="Min. 6 characters" required minlength="6" autocomplete="new-password">
+          </div>
+          <div class="form-group">
+            <label>Confirm password</label>
+            <input type="password" id="inp-pass2" class="form-input" placeholder="Repeat password" required minlength="6" autocomplete="new-password">
+          </div>
+        </div>
+      `,
+      rightTitle: 'You are almost back in.',
+      rightCopy: 'After updating your password, we will sign you in and drop you on the dashboard.',
+      statsHtml: `
+        <div class="auth-stat"><div class="v">AES</div><div class="k">Hashed storage</div></div>
+        <div class="auth-stat"><div class="v">6</div><div class="k">Live modules</div></div>
+        <div class="auth-stat"><div class="v">1h</div><div class="k">Optimization loop</div></div>
+        <div class="auth-stat"><div class="v">ROAS</div><div class="k">Focused workflow</div></div>
+      `,
+    }),
+    scripts: `
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script>
+    var sb = supabase.createClient('${SUPABASE_URL}', '${SUPABASE_ANON_KEY}');
+    var recoveryReady = false;
+
+    function showResetForm() {
+      if (recoveryReady) return;
+      recoveryReady = true;
+      var waitEl = document.getElementById('reset-wait');
+      var fieldsEl = document.getElementById('reset-fields');
+      var btn = document.getElementById('btn-reset');
+      if (waitEl) waitEl.style.display = 'none';
+      if (fieldsEl) fieldsEl.style.display = 'block';
+      if (btn) btn.disabled = false;
+    }
+
+    function showResetError(msg) {
+      var waitEl = document.getElementById('reset-wait');
+      var btn = document.getElementById('btn-reset');
+      if (waitEl) {
+        waitEl.style.display = 'block';
+        waitEl.textContent = msg;
+      }
+      if (btn) btn.style.display = 'none';
+    }
+
+    (async function initReset() {
+      var btn = document.getElementById('btn-reset');
+      if (btn) btn.disabled = true;
+
+      try {
+        var u = new URL(window.location.href);
+        if (u.searchParams.get('code')) {
+          var ex = await sb.auth.exchangeCodeForSession(window.location.href);
+          if (ex.error) throw ex.error;
+        }
+      } catch (e) {
+        showResetError('This reset link is invalid or expired. Request a new one below.');
+        return;
+      }
+
+      sb.auth.onAuthStateChange(function(event, session) {
+        if (event === 'PASSWORD_RECOVERY' && session) showResetForm();
+      });
+
+      async function haveSession() {
+        var r = await sb.auth.getSession();
+        return !!(r.data && r.data.session);
+      }
+
+      if (await haveSession()) {
+        showResetForm();
+        return;
+      }
+
+      var tries = 0;
+      var t = setInterval(async function() {
+        tries += 1;
+        if (await haveSession()) {
+          clearInterval(t);
+          showResetForm();
+          return;
+        }
+        if (tries >= 20) {
+          clearInterval(t);
+          if (!recoveryReady) {
+            showResetError('This reset link is invalid or expired. Request a new reset email.');
+          }
+        }
+      }, 350);
+    })();
+
+    async function handleResetPassword(e) {
+      e.preventDefault();
+      var p1 = document.getElementById('inp-pass').value;
+      var p2 = document.getElementById('inp-pass2').value;
+      if (p1 !== p2) {
+        showToast('Passwords do not match', 'error');
+        return;
+      }
+      var btn = document.getElementById('btn-reset');
+      btn.disabled = true; btn.textContent = 'Saving…';
+
+      try {
+        var result = await sb.auth.updateUser({ password: p1 });
+        if (result.error) throw result.error;
+        var sess = await sb.auth.getSession();
+        if (sess.data && sess.data.session) {
+          var s = sess.data.session;
+          document.cookie = 'sb_access_token=' + s.access_token + ';path=/;max-age=' + s.expires_in + ';SameSite=Lax';
+          document.cookie = 'sb_refresh_token=' + s.refresh_token + ';path=/;max-age=2592000;SameSite=Lax';
+        }
+        showToast('Password updated. Redirecting…', 'success');
+        setTimeout(function() { window.location.href = '/app'; }, 600);
+      } catch(err) {
+        btn.disabled = false; btn.textContent = 'Update password';
+        showToast(err.message || 'Update failed', 'error');
+      }
+    }
+  </script>
+`,
   });
 }
