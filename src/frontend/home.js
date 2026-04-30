@@ -152,72 +152,6 @@ export function homePage() {
       border-top: 1px solid var(--border);
     }
 
-    .home-pricing-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-      margin-top: 48px;
-      align-items: stretch;
-    }
-    @media (max-width: 900px) { .home-pricing-grid { grid-template-columns: 1fr; } }
-
-    .home-price-card { display: flex; flex-direction: column; height: 100%; }
-    .home-price-card--featured {
-      border-color: var(--border-hover);
-      box-shadow: 0 1px 0 var(--primary) inset;
-      background: var(--bg-elevated);
-    }
-    .home-price-tier {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      color: var(--text-muted);
-    }
-    .home-price-card--featured .home-price-tier { color: var(--primary); }
-    .home-price-amount {
-      font-family: var(--font-display);
-      font-size: clamp(40px, 5vw, 52px);
-      font-weight: 800;
-      letter-spacing: -0.03em;
-      margin-top: 8px;
-      line-height: 1;
-    }
-    .home-price-amount span {
-      font-size: 15px;
-      font-weight: 500;
-      color: var(--text-muted);
-      letter-spacing: 0;
-      font-family: var(--font-body);
-    }
-    .home-price-desc { font-size: 13px; color: var(--text-muted); margin-top: 6px; }
-    .home-price-features {
-      margin-top: 28px;
-      padding-top: 24px;
-      border-top: 1px solid var(--border);
-      font-size: 14px;
-      color: var(--text-secondary);
-      line-height: 2.2;
-      flex: 1;
-    }
-    .home-price-features li {
-      list-style: none;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .home-price-features li::before {
-      content: '';
-      width: 5px;
-      height: 5px;
-      border-radius: 50%;
-      background: var(--primary);
-      flex-shrink: 0;
-    }
-    .home-price-actions { margin-top: 28px; }
-    .home-price-actions .btn { width: 100%; justify-content: center; }
-
     .home-cta-inner {
       max-width: 560px;
       margin: 0 auto;
@@ -373,64 +307,6 @@ export function homePage() {
           <h3 class="text-headline" style="font-size: 22px; letter-spacing: -0.02em;">Claude Opus</h3>
           <p class="text-body" style="margin-top: 12px;">Critical budget allocation and strategy decisions. The strategic brain of your ad agency.</p>
           <div class="home-intel-model">claude-opus-4-6</div>
-        </article>
-      </div>
-    </div>
-  </section>
-
-  <section class="section" id="pricing">
-    <div class="container">
-      <p class="label-tag reveal">Pricing</p>
-      <h2 class="text-section reveal reveal-d1" style="margin-top: 16px; max-width: 480px;">
-        Start free. Scale when ready.
-      </h2>
-
-      <div class="home-pricing-grid">
-        <article class="card home-price-card reveal reveal-d2">
-          <div class="home-price-tier">Starter</div>
-          <div class="home-price-amount">$0</div>
-          <div class="home-price-desc">Free during beta</div>
-          <ul class="home-price-features">
-            <li>1 business</li>
-            <li>All 6 agents</li>
-            <li>Basic reporting</li>
-            <li>Email support</li>
-          </ul>
-          <div class="home-price-actions">
-            <a href="/auth/signup" class="btn btn-ghost">Get started</a>
-          </div>
-        </article>
-
-        <article class="card home-price-card home-price-card--featured reveal reveal-d3">
-          <div class="home-price-tier">Growth</div>
-          <div class="home-price-amount">$97<span>/mo</span></div>
-          <div class="home-price-desc">Per business managed</div>
-          <ul class="home-price-features">
-            <li>Up to 5 businesses</li>
-            <li>Advanced reporting</li>
-            <li>Priority support</li>
-            <li>Custom creatives</li>
-            <li>Daily Opus reviews</li>
-          </ul>
-          <div class="home-price-actions">
-            <a href="/auth/signup" class="btn btn-primary">Start free trial</a>
-          </div>
-        </article>
-
-        <article class="card home-price-card reveal reveal-d4">
-          <div class="home-price-tier">Agency</div>
-          <div class="home-price-amount">$497<span>/mo</span></div>
-          <div class="home-price-desc">Unlimited scale</div>
-          <ul class="home-price-features">
-            <li>Up to 25 businesses</li>
-            <li>White-label dashboard</li>
-            <li>API access</li>
-            <li>Dedicated support</li>
-            <li>Custom agent tuning</li>
-          </ul>
-          <div class="home-price-actions">
-            <a href="/auth/signup" class="btn btn-ghost">Contact sales</a>
-          </div>
         </article>
       </div>
     </div>
