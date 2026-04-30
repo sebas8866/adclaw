@@ -1,7 +1,6 @@
 import express from 'express';
 import os from 'os';
 import { metaAuthRoutes } from '../integrations/meta-oauth.js';
-import { handleWebhook } from '../integrations/stripe-billing.js';
 
 export function createApiRouter(swarmManager) {
   const router = express.Router();
@@ -40,10 +39,6 @@ export function createApiRouter(swarmManager) {
 
   // ── Swarm Management ──────────────────────────────────────────────
 
-  /**
-   * POST /api/swarms/launch
-   * Body: { clientId, businessPageUrl, metaAccessToken, googleAccessToken? }
-   */
   router.post('/swarms/launch', async (req, res) => {
     try {
       const { clientId, businessPageUrl, metaAccessToken, googleAccessToken } = req.body;
@@ -88,10 +83,6 @@ export function createApiRouter(swarmManager) {
     }
   });
 
-  /**
-   * GET /api/swarms/:id/report
-   * Returns the latest daily report for a swarm.
-   */
   router.get('/swarms/:id/report', (req, res) => {
     const swarm = swarmManager.get(req.params.id);
     if (!swarm) return res.status(404).json({ error: 'Swarm not found' });
@@ -101,10 +92,6 @@ export function createApiRouter(swarmManager) {
     res.json(report);
   });
 
-  /**
-   * POST /api/swarms/:id/creative/generate
-   * Trigger new creative generation for a swarm.
-   */
   router.post('/swarms/:id/creative/generate', async (req, res) => {
     const swarm = swarmManager.get(req.params.id);
     if (!swarm) return res.status(404).json({ error: 'Swarm not found' });
@@ -114,17 +101,6 @@ export function createApiRouter(swarmManager) {
       res.json({ creatives: creatives.length, data: creatives });
     } catch (err) {
       res.status(500).json({ error: err.message });
-    }
-  });
-
-  // ── Stripe Webhook ────────────────────────────────────────────────
-
-  router.post('/webhooks/stripe', express.raw({ type: 'application/json' }), async (req, res) => {
-    try {
-      const event = await handleWebhook(req.body, req.headers['stripe-signature']);
-      res.json({ received: true, type: event.type });
-    } catch (err) {
-      res.status(400).json({ error: err.message });
     }
   });
 
