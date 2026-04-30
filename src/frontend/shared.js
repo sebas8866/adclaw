@@ -320,11 +320,8 @@ export function pageWrapper({ title, body, activeNav = '', scripts = '', noAuth 
     </div>
     <div class="nav-user">
       ${publicNav ? `
-      <a href="/auth/login" style="color:var(--text-secondary)">Log in</a>
-      <a href="/auth/signup" class="btn btn-primary btn-sm" style="margin-left:4px">Sign up</a>
-      ` : `
-      <a href="/auth/logout">Sign out</a>
-      `}
+      <a href="https://github.com/sebas8866/adclaw" class="btn btn-ghost btn-sm" style="margin-left:4px" target="_blank" rel="noopener">GitHub ↗</a>
+      ` : ``}
     </div>
   </nav>`}
 
