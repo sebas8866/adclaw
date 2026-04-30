@@ -311,8 +311,7 @@ export function pageWrapper({ title, body, activeNav = '', scripts = '', noAuth 
       ${publicNav ? `
       <a href="/"${activeNav === 'home' ? ' class="active"' : ''}>Home</a>
       <a href="#how">How it works</a>
-      <a href="#pricing">Pricing</a>
-      ` : `
+` : `
       <a href="/"${activeNav === 'home' ? ' class="active"' : ''}>Home</a>
       <a href="/app"${activeNav === 'app' ? ' class="active"' : ''}>Dashboard</a>
       <a href="/app/launch"${activeNav === 'launch' ? ' class="active"' : ''}>Launch</a>
