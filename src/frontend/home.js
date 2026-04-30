@@ -170,7 +170,7 @@ export function homePage() {
           Connect Meta &amp; Google Ads. Paste your business page. A dedicated AI agent swarm handles research, creatives, optimization, and reporting around the clock.
         </p>
         <div class="flex gap-2 reveal reveal-d4" style="margin-top: 36px; flex-wrap: wrap;">
-          <a href="/auth/signup" class="btn btn-primary btn-lg">Get started free</a>
+          <a href="/app" class="btn btn-primary btn-lg">Get started free</a>
           <a href="#how" class="btn btn-secondary btn-lg">How it works</a>
         </div>
       </div>
@@ -319,7 +319,7 @@ export function homePage() {
         Set up takes under five minutes. Your swarm starts optimizing immediately.
       </p>
       <div class="reveal reveal-d2" style="margin-top: 36px;">
-        <a href="/auth/signup" class="btn btn-primary btn-lg">Get started free</a>
+        <a href="/app" class="btn btn-primary btn-lg">Get started free</a>
       </div>
     </div>
   </section>
